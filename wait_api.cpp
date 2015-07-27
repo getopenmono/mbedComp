@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 #include "wait_api.h"
+
 extern "C" {
     #include <project.h>
 }
 
 
 void mbed::wait(float s) {
-    wait_us(s * 1000000.0f);
+    wait_ms(s * 1000.0f);
 }
 
 void mbed::wait_ms(int ms) {
-    wait_us(ms * 1000);
+    CyDelay(ms);
 }
 
 void mbed::wait_us(int us) {

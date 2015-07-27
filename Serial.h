@@ -11,7 +11,19 @@ namespace mbed {
     {
     protected:
         char strBuffer[256];
+        
+        static bool usbSerialInited;
+        bool isEnumerated;
+        bool uartStarted;
+        
+        
+        void enumerateIfConfigurationChanged();
+        
+        bool enumerate();
+        
     public:
+        
+        int timeoutMs;
         
         Serial(PinName tx, PinName rx);
         
