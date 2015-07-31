@@ -18,8 +18,8 @@ void spi_init         (spi_t *obj, PinName mosi, PinName miso, PinName sclk, Pin
     
     CyGlobalIntEnable;
     SPI0_Start();
-    CyPins_SetPinDriveMode(ssel, CY_PINS_DM_STRONG);
-    CyPins_SetPin(ssel); // set (active low) CS
+    //CyPins_SetPinDriveMode(ssel, CY_PINS_DM_STRONG);
+    //CyPins_SetPin(ssel); // set (active low) CS
 }
 
 void spi_free         (spi_t *obj)
@@ -45,27 +45,35 @@ void spi_setHighCS(spi_t *obj)
 int  spi_master_write (spi_t *obj, int value)
 {
     //set the CS pin
-    CyPins_ClearPin(obj->cs); // activate chip select
-    
+    //CyPins_ClearPin(obj->cs); // activate chip select
+    int timeout = 500;
     // only 8 bit transfer
     if (value <= 0xFF)
     {
         SPI0_WriteTxData(value);
-        while((SPI0_ReadTxStatus() & SPI0_STS_SPI_DONE) == 0);
+        int to = 0;
+        while((SPI0_ReadTxStatus() & SPI0_STS_SPI_DONE) == 0 && timeout > to++)
+        {
+            CyDelay(1);
+        }
         int retval = 0;
         retval = SPI0_ReadRxData();
-        CyPins_SetPin(obj->cs);
+        //CyPins_SetPin(obj->cs);
         return retval;
     }
     else
     {
         
         SPI0_PutArray((uint8_t*) &value, sizeof(int));
-        while((SPI0_ReadTxStatus() & SPI0_STS_SPI_DONE) == 0);
+        int to = 0;
+        while((SPI0_ReadTxStatus() & SPI0_STS_SPI_DONE) == 0 && timeout > to++)
+        {
+            CyDelay(1);
+        }
         
         if (SPI0_GetRxBufferSize() == 0)
         {
-            CyPins_SetPin(obj->cs);
+            //CyPins_SetPin(obj->cs);
             return 0;
         }
         
@@ -78,7 +86,7 @@ int  spi_master_write (spi_t *obj, int value)
             bytePtr++;
         }
         
-        CyPins_SetPin(obj->cs);
+        //CyPins_SetPin(obj->cs);
         return returnValue;
     }
     

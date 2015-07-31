@@ -2,6 +2,7 @@
 
 #include <cstdarg>
 #include <cstdio>
+//#include "app_controller.h"
 
 extern "C" {
 #include <project.h>
@@ -12,11 +13,12 @@ extern "C" {
 using namespace mbed;
 
 bool Serial::usbSerialInited = false;
+bool Serial::isEnumerated = false;
 
 Serial::Serial(PinName tx, PinName rx)
 {
 //    uiConsole.WriteLine("Serial contrsuctor, start USB...");
-    isEnumerated = false;
+    
     uartStarted = false;
     timeoutMs = 2000;
     
@@ -25,15 +27,31 @@ Serial::Serial(PinName tx, PinName rx)
 
 int Serial::printf(const char* format, ...) {
 //    uiConsole.WriteLine("usb printf...");
-    enumerateIfConfigurationChanged();
+    
+    if (!Serial::isEnumerated)
+        enumerateIfConfigurationChanged();
     
     std::va_list arg;
 	va_start(arg, format);
     vsprintf(strBuffer, format, arg);
     va_end(arg);
     
-    if (isEnumerated)
-        USBUART_PutString(strBuffer);
+    if (Serial::isEnumerated)
+    {
+        int to = 0;
+        while (USBUART_CDCIsReady() == 0 && timeoutMs > to++)
+        {
+            CyDelay(1);
+        }
+        
+        if (to < timeoutMs)
+            USBUART_PutString(strBuffer);
+        else {
+//            AppController::uicon.WriteLine("UART timeout!");
+//            AppController::uicon.Write(strBuffer);
+        }
+        
+    }
     
     
     return 0;
@@ -61,23 +79,23 @@ void Serial::enumerateIfConfigurationChanged()
     
     
 //    uiConsole.WriteLine("enum if config changed...");
-    if (isEnumerated)
+    if (Serial::isEnumerated)
     {
-//        uiConsole.WriteLine("is enum. Is config changed?...");
-        if (USBUART_IsConfigurationChanged())
-        {
-//            uiConsole.WriteLine("config changed! Can get new config?");
-            if (0 == USBUART_GetConfiguration())
-            {
-//                uiConsole.WriteLine("could not get config - no enum!");
-                isEnumerated = false;
-            }
-            else
-            {
-//                uiConsole.WriteLine("got new config");
-                isEnumerated = true;
-            }
-        }
+////        uiConsole.WriteLine("is enum. Is config changed?...");
+//        if (USBUART_IsConfigurationChanged())
+//        {
+////            uiConsole.WriteLine("config changed! Can get new config?");
+//            if (0 == USBUART_GetConfiguration())
+//            {
+////                uiConsole.WriteLine("could not get config - no enum!");
+//                isEnumerated = false;
+//            }
+//            else
+//            {
+////                uiConsole.WriteLine("got new config");
+//                isEnumerated = true;
+//            }
+//        }
     }
     else
     {
@@ -107,14 +125,14 @@ bool Serial::enumerate()
     if (USBUART_GetConfiguration())
     {
 //        uiConsole.WriteLine("Got config!");
-        isEnumerated = true;
+        Serial::isEnumerated = true;
         USBUART_CDC_Init();
         return true;
     }
     else
     {
 //        uiConsole.WriteLine("timeout!");
-        isEnumerated = false;
+        Serial::isEnumerated = false;
         return false;
     }
 }

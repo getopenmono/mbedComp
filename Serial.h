@@ -10,10 +10,10 @@ namespace mbed {
     class Serial
     {
     protected:
-        char strBuffer[256];
+        char strBuffer[128];
         
         static bool usbSerialInited;
-        bool isEnumerated;
+        static bool isEnumerated;
         bool uartStarted;
         
         
