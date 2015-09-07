@@ -136,3 +136,18 @@ bool Serial::enumerate()
         return false;
     }
 }
+
+bool Serial::DTR()
+{
+    if (!Serial::isEnumerated)
+    {
+        enumerateIfConfigurationChanged();
+    }
+    
+    return USBUART_GetLineControl() & USBUART_LINE_CONTROL_DTR;
+}
+
+bool Serial::IsReady()
+{
+    return Serial::isEnumerated;
+}

@@ -24,13 +24,15 @@ typedef enum {
     ADBUS6 = 64,
     ADBUS7 = 128,
     
+    SW_USER = CYREG_PRT4_PC6,
+    
     RP_SPI_CLK = HARD_WIRED,
     RP_SPI_MOSI = HARD_WIRED,
     RP_SPI_MISO = HARD_WIRED,
     RP_SPI_CS = CYREG_PRT2_PC6,
     RP_nRESET = CYREG_PRT5_PC0,
     
-    
+    TFT_LED_PWR = CYREG_PRT5_PC5,
     
     USBTX,
     USBRX,

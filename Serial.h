@@ -29,6 +29,10 @@ namespace mbed {
         
         int printf(const char* format, ...);
         
+        bool DTR();
+        
+        bool IsReady();
+        
         //int scanf(const char *format, ...);
     };
     
