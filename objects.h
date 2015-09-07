@@ -32,6 +32,11 @@ struct spi_s {
     char lowBytesValue;
     char lowByteDirection;
 };
+    
+struct i2c_s {
+    PinName sda;
+    PinName sdc;
+};
 
 #ifdef __cplusplus
 }

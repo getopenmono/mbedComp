@@ -9,9 +9,12 @@
 #ifndef spiTest_PinNames_h
 #define spiTest_PinNames_h
 
+
+#ifdef __cplusplus
 extern "C" {
 #include <project.h>
 }
+#endif
 
 typedef enum {
     HARD_WIRED,
