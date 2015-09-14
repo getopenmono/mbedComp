@@ -6,9 +6,9 @@
 
 void i2c_init(i2c_t *obj, PinName sda, PinName scl)
 {
-    
-    CyGlobalIntEnable;
-    I2C_Start();
+    obj->initied = 0;
+    obj->sda = sda;
+    obj->sdc = scl;
 }
 
 /** Configure the I2C frequency.
@@ -46,14 +46,21 @@ int  i2c_stop(i2c_t *obj)
  */
 int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
 {
+    if (!obj->initied)
+    {
+        CyGlobalIntEnable;
+        I2C_Start();
+        obj->initied = 1;
+    }
+    
     int status = I2C_MasterReadBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
     
     if (status != 0)
         return status;
     
-    while((I2C_MasterStatus() & I2C_MSTAT_RD_CMPLT) == 0);
+    while((I2C_MasterStatus() & I2C_MSTAT_XFER_INP) == 1);
     
-    return length;
+    return status;
 }
 
 /** Blocking sending data.
@@ -66,14 +73,21 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
  */
 int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
 {
+    if (!obj->initied)
+    {
+        CyGlobalIntEnable;
+        I2C_Start();
+        obj->initied = 1;
+    }
+    
     int status = I2C_MasterWriteBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
     
     if (status != 0)
         return status;
     
-    while ((I2C_MasterStatus() & I2C_MSTAT_WR_CMPLT) == 0);
+    while ((I2C_MasterStatus() & I2C_MSTAT_XFER_INP) == 1);
     
-    return length;
+    return status;
 }
 
 /** Reset I2C peripheral. TODO: The action here. Most of the implementation sends stop().

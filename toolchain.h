@@ -13,35 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#ifndef MBED_TOOLCHAIN_H
+#define MBED_TOOLCHAIN_H
 
-#include "PinNames.h"
-#include "gpio_object.h"
-
-#ifdef __cplusplus
-extern "C" {
+#if defined(TOOLCHAIN_ARM)
+#include <rt_sys.h>
 #endif
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
-};
-    
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
+#ifndef FILEHANDLE
+typedef int FILEHANDLE;
+#endif
 
-#ifdef __cplusplus
-}
+#if defined (__ICCARM__)
+#   define WEAK     __weak
+#   define PACKED   __packed
+#else
+#   define WEAK     __attribute__((weak))
+#   define PACKED   __attribute__((packed))
 #endif
 
 #endif

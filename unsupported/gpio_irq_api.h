@@ -13,35 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#ifndef MBED_GPIO_IRQ_API_H
+#define MBED_GPIO_IRQ_API_H
 
-#include "PinNames.h"
-#include "gpio_object.h"
+#include "device.h"
+
+#if DEVICE_INTERRUPTIN
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
-};
-    
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
+typedef enum {
+    IRQ_NONE,
+    IRQ_RISE,
+    IRQ_FALL
+} gpio_irq_event;
+
+typedef struct gpio_irq_s gpio_irq_t;
+
+typedef void (*gpio_irq_handler)(uint32_t id, gpio_irq_event event);
+
+int  gpio_irq_init(gpio_irq_t *obj, PinName pin, gpio_irq_handler handler, uint32_t id);
+void gpio_irq_free(gpio_irq_t *obj);
+void gpio_irq_set (gpio_irq_t *obj, gpio_irq_event event, uint32_t enable);
+void gpio_irq_enable(gpio_irq_t *obj);
+void gpio_irq_disable(gpio_irq_t *obj);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

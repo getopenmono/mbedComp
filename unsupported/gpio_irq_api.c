@@ -13,35 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#include <stddef.h>
 
-#include "PinNames.h"
-#include "gpio_object.h"
+#include "gpio_irq_api.h"
+#include "mbed_error.h"
+//#include "cmsis.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define CHANNEL_NUM     31
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
-};
+static uint32_t channel_ids[CHANNEL_NUM] = {0};
+static gpio_irq_handler irq_handler;
+
+static void handle_interrupt_in(void) {
     
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
-
-#ifdef __cplusplus
 }
-#endif
 
-#endif
+void gpio_irq_enable(gpio_irq_t *obj) {
+    
+}
+
+void gpio_irq_disable(gpio_irq_t *obj) {
+    
+}
+

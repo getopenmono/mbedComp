@@ -13,32 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#ifndef MBED_GPIO_OBJECT_H
+#define MBED_GPIO_OBJECT_H
 
-#include "PinNames.h"
-#include "gpio_object.h"
+#include "mbed_assert.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
-};
+#include <project.h>
     
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
+typedef struct {
+    PinName  pin;
+    uint32_t mask;
+
+    char *prt_dr;
+    char *prt_ps;
+    char *prt_dm;
+    char *prt_slw;
+    char *prt_byp;
+    char *prt_bie;
+} gpio_t;
+
+static inline void gpio_write(gpio_t *obj, int value) {
+    MBED_ASSERT(obj->pin != (PinName)NC);
+    if (value)
+        CyPins_SetPin(obj->pin);
+    else
+        CyPins_ClearPin(obj->pin);
+}
+
+static inline int gpio_read(gpio_t *obj) {
+    MBED_ASSERT(obj->pin != (PinName)NC);
+    return CyPins_ReadPin(obj->pin);
+}
+
+static inline int gpio_is_connected(const gpio_t *obj) {
+    return obj->pin != (PinName)NC;
+}
 
 #ifdef __cplusplus
 }

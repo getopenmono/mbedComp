@@ -13,35 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
-
-#include "PinNames.h"
-#include "gpio_object.h"
-
-#ifdef __cplusplus
-extern "C" {
+#include <stdlib.h>
+#include <stdarg.h>
+#include "device.h"
+#include "toolchain.h"
+#include "mbed_error.h"
+#if DEVICE_STDIO_MESSAGES
+#include <stdio.h>
 #endif
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
-};
-    
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
-
-#ifdef __cplusplus
+WEAK void error(const char* format, ...) {
+#if DEVICE_STDIO_MESSAGES
+    va_list arg;
+    va_start(arg, format);
+    vfprintf(stderr, format, arg);
+    va_end(arg);
+#endif
+    exit(1);
 }
-#endif
-
-#endif

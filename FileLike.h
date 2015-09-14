@@ -13,35 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#ifndef MBED_FILELIKE_H
+#define MBED_FILELIKE_H
 
-#include "PinNames.h"
-#include "gpio_object.h"
+#include "FileBase.h"
+#include "FileHandle.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace mbed {
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
+/* Class FileLike
+ *  A file-like object is one that can be opened with fopen by
+ *  fopen("/name", mode). It is intersection of the classes Base and
+ *  FileHandle.
+ */
+class FileLike : public FileHandle, public FileBase {
+
+public:
+    /* Constructor FileLike
+     *
+     * Variables
+     *  name - The name to use to open the file.
+     */
+    FileLike(const char *name);
+
+    virtual ~FileLike();
 };
-    
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
 
-#ifdef __cplusplus
-}
-#endif
+} // namespace mbed
 
 #endif

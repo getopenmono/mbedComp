@@ -13,35 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef MBED_OBJECTS_H
-#define MBED_OBJECTS_H
+#ifndef MBED_FILEPATH_H
+#define MBED_FILEPATH_H
 
-#include "PinNames.h"
-#include "gpio_object.h"
+#include "platform.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "FileSystemLike.h"
+#include "FileLike.h"
 
-struct spi_s {
-    //FT_HANDLE handle;
-    PinName clk;
-    PinName mosi;
-    PinName miso;
-    PinName cs;
-    char bitmode;
-    char lowBytesValue;
-    char lowByteDirection;
+namespace mbed {
+
+class FilePath {
+public:
+    FilePath(const char* file_path);
+
+    const char* fileName(void);
+
+    bool          isFileSystem(void);
+    FileSystemLike* fileSystem(void);
+
+    bool    isFile(void);
+    FileLike* file(void);
+    bool    exists(void);
+
+private:
+    const char* file_name;
+    FileBase* fb;
 };
-    
-struct i2c_s {
-    PinName sda;
-    PinName sdc;
-    char initied;
-};
 
-#ifdef __cplusplus
-}
-#endif
+} // namespace mbed
 
 #endif
