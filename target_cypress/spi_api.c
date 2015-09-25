@@ -99,7 +99,7 @@ int  spi_master_write (spi_t *obj, int value)
     //CyPins_ClearPin(obj->cs); // activate chip select
     int timeout = 1000;
     // only 8 bit transfer
-    if (obj->port != NULL && obj->port->bitmode == 8)
+    if (obj->port != NULL && obj->bitmode == 8)
     {
         obj->port->SPI_WriteTxData(value);
         int to = 0;
