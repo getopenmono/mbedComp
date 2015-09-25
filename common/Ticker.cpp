@@ -13,21 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "wait_api.h"
+#include "Ticker.h"
 
-extern "C" {
-    #include <project.h>
+#include "TimerEvent.h"
+#include "FunctionPointer.h"
+#include "ticker_api.h"
+
+#include <mono.h>
+
+namespace mbed {
+
+void Ticker::detach() {
+    remove();
+    _function.attach(0);
 }
 
-
-void mbed::wait(float s) {
-    wait_ms(s * 1000.0f);
+void Ticker::setup(timestamp_t t) {
+    remove();
+    _delay = t;
+    insert(_delay + ticker_read(_ticker_data));
 }
 
-void mbed::wait_ms(int ms) {
-    CyDelay(ms);
+void Ticker::handler() {
+    insert(event.timestamp + _delay);
+    _function.call();
 }
 
-void mbed::wait_us(int us) {
-    CyDelayUs(us);
-}
+} // namespace mbed

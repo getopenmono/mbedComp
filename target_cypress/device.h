@@ -33,6 +33,8 @@
 #define DEVICE_SPI              1
 #define DEVICE_SPISLAVE         0
 
+#define DEVICE_SPI1				1
+
 #define DEVICE_CAN              1
 
 #define DEVICE_RTC              1

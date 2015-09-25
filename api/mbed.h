@@ -6,3 +6,4 @@
 #include "DigitalOut.h"
 #include "mbed_error.h"
 #include "FileSystemLike.h"
+#include "Ticker.h"
