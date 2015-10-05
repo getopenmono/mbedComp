@@ -33,6 +33,8 @@ namespace mbed {
         
         bool IsReady();
         
+        static void wakeUpRoutine();
+        
         //int scanf(const char *format, ...);
     };
     

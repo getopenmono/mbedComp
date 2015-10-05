@@ -20,14 +20,14 @@ Serial::Serial(PinName tx, PinName rx)
 //    uiConsole.WriteLine("Serial contrsuctor, start USB...");
     
     uartStarted = false;
-    timeoutMs = 2000;
+    timeoutMs = 500;
     
 //    uiConsole.WriteLine("USB started");
 }
 
 int Serial::printf(const char* format, ...) {
 //    uiConsole.WriteLine("usb printf...");
-    
+#ifndef MONO_NO_USB
     if (!Serial::isEnumerated)
         enumerateIfConfigurationChanged();
     
@@ -53,6 +53,7 @@ int Serial::printf(const char* format, ...) {
         
     }
     
+#endif
     
     return 0;
 }
@@ -72,8 +73,10 @@ void Serial::enumerateIfConfigurationChanged()
 {
     if (!uartStarted)
     {
+#ifndef MONO_NO_USB
         CyGlobalIntEnable;
         USBUART_Start(0, USBUART_DWR_VDDD_OPERATION);
+#endif
         uartStarted = true;
     }
     
@@ -109,6 +112,8 @@ bool Serial::enumerate()
 //    uiConsole.WriteLine("USB enumerate: Get conf...");
     int timeOut = timeoutMs;
     CyGlobalIntEnable;
+    
+#ifndef MONO_NO_USB
     while(USBUART_GetConfiguration() == 0 && timeOut > 0)
     {
         CyDelay(1); // wait one MS
@@ -135,16 +140,29 @@ bool Serial::enumerate()
         Serial::isEnumerated = false;
         return false;
     }
+#else
+    return true;
+#endif
+}
+
+void Serial::wakeUpRoutine()
+{
+    Serial::isEnumerated = false;
+    //Serial::uartStarted = false;
 }
 
 bool Serial::DTR()
 {
+#ifndef MONO_NO_USB
     if (!Serial::isEnumerated)
     {
         enumerateIfConfigurationChanged();
     }
     
     return USBUART_GetLineControl() & USBUART_LINE_CONTROL_DTR;
+#else
+    return false;
+#endif
 }
 
 bool Serial::IsReady()

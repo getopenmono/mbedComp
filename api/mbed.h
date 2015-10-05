@@ -6,4 +6,5 @@
 #include "DigitalOut.h"
 #include "mbed_error.h"
 #include "FileSystemLike.h"
+#include "FunctionPointer.h"
 #include "Ticker.h"

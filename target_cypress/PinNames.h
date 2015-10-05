@@ -31,25 +31,26 @@ typedef enum {
     
     
     // Auxillary pins
-    SW_USER = CYREG_PRT4_PC6,
-    BUZZER = CYREG_PRT5_PC3,
-    EXPANSION_5V_nENABLE = CYREG_PRT12_PC0,
+    SW_USER = CYREG_PRT4_PC6,                   /**< User button pin, active low */
+    BUZZER = CYREG_PRT5_PC3,                    /**< Buzzer PWM signal pin */
+    EXPANSION_5V_nENABLE = CYREG_PRT12_PC0,     /**< Enable 5V level on exp. cnnctr. I/O, active low */
     
     //Redpine wireless pins
-    RP_SPI_HARD_WIRE,
-    RP_SPI_CLK = RP_SPI_HARD_WIRE,
+    RP_SPI_HARD_WIRE,                           /**< Enum for the wireless module SPI */
+    RP_SPI_CLK = RP_SPI_HARD_WIRE,              
     RP_SPI_MOSI = RP_SPI_HARD_WIRE,
     RP_SPI_MISO = RP_SPI_HARD_WIRE,
-    RP_SPI_CS = CYREG_PRT2_PC6,
-    RP_nRESET = CYREG_PRT5_PC0,
+    RP_SPI_CS = CYREG_PRT2_PC6,                 /**< Chip select for wireless module SPI, active low */
+    RP_nRESET = CYREG_PRT5_PC0,                 /**< Reset line for wireless module, active low */
+    RP_INTERRUPT = CYREG_PRT2_PC5,              /**< Wireless module interrupt on data, input! */
     
     //SD Card SPI pins
-    SD_SPI_HARD_WIRE = RP_SPI_HARD_WIRE,
+    SD_SPI_HARD_WIRE = RP_SPI_HARD_WIRE,        /**< Enum for SD card SPI pins */
     SD_SPI_CLK = SD_SPI_HARD_WIRE,
     SD_SPI_MOSI = SD_SPI_HARD_WIRE,
     SD_SPI_MISO = SD_SPI_HARD_WIRE,
-    SD_SPI_CS = CYREG_PRT2_PC3,
-    SD_INSERT_SW = CYREG_PRT5_PC1,
+    SD_SPI_CS = CYREG_PRT2_PC3,                 /**< SD Card chip select */
+    SD_INSERT_SW = CYREG_PRT5_PC1,              /**<  */
     
     //Display SPI pins
     TFT_SPI_HARD_WIRE,
