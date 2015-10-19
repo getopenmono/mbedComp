@@ -19,8 +19,6 @@
 #include "FunctionPointer.h"
 #include "ticker_api.h"
 
-#include <mono.h>
-
 namespace mbed {
 
 void Ticker::detach() {
