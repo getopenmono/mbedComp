@@ -18,6 +18,9 @@
 #include "FileSystemLike.h"
 #include "FilePath.h"
 //#include "serial_api.h"
+extern "C" {
+#include <project.h>
+}
 #include "toolchain.h"
 //#include "semihost_api.h"
 #include "mbed_interface.h"
@@ -208,6 +211,16 @@ extern "C" int PREFIX(_write)(FILEHANDLE fh, const unsigned char *buffer, unsign
         for (unsigned int i = 0; i < length; i++) {
             serial_putc(&stdio_uart, buffer[i]);
         }
+#else
+#ifndef MONO_NO_USB
+        int to = 0;
+        while (USBUART_CDCIsReady() == 0 && 1000 > to++)
+        {
+            CyDelay(1);
+        }
+        if (to < 1000)
+            USBUART_PutData(buffer, length);
+#endif
 #endif
         n = length;
     } else {

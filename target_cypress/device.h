@@ -33,7 +33,11 @@
 #define DEVICE_SPI              1
 #define DEVICE_SPISLAVE         0
 
+#ifndef MONO_DISP_CTRL_HX8340
 #define DEVICE_SPI1				1
+#else
+#define DEVICE_SPI1				0
+#endif
 
 #define DEVICE_CAN              1
 

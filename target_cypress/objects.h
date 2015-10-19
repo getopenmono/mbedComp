@@ -49,6 +49,17 @@ struct i2c_s {
     PinName sdc;
     char initied;
 };
+    
+struct gpio_irq_s
+{
+    int pinReg;         /**< CYREG_* address */
+    uint8_t portNum;    /**< The port number for the PRT* */
+    int inttypeReg;     /**< CYREG_PICU*_INTTYPE* register address */
+    int picuStat;       /**< Address of the PICU*_STAT register */
+    uint8_t irqLine;    /**< The interrypt line as defined by gpio_irq_piculines */
+    int snapShotAddr;   /**< The address to the PICU snapshot register */
+    uint8_t ch;         /**< The index for the channel, that hold a pointer to the InterruptIn object */
+};
 
 #ifdef __cplusplus
 }
