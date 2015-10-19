@@ -6,16 +6,58 @@ FLASH_ARRAY_SIZE=65536
 EE_ARRAY=64
 EE_ROW_SIZE=16
 OPTIMIZATION = -O0
+INCLUDE_DIR=../mono_buildsystem/include
 CYPRESS_DIR=../mono_buildsystem/Generated_Source/PSoC5
-LINKER_SCRIPT=${CYPRESS_DIR}/cm3gcc.ld
+LINKER_SCRIPT=${INCLUDE_DIR}/cm3gcc.ld
 BUILD_DIR=build
-COMP_LIB="../mono_buildsystem/lib/CyComponentLibrary.a"
-MONO_CY_LIBRARY=../mono_buildsystem/monoCyLib.a
+MONO_FRAMEWORK_PATH =../mono_framework
+MBED_PATH=.
+MBED_FS=../mbed/libraries/fs
+COMP_LIB=../mono_buildsystem/lib/CyComponentLibrary.a
+MONO_LIB=../mono_buildsystem/lib/monoCyLib.a
 
-OBJECTS =	$(patsubst %.c,%.o,$(wildcard *.c))
-		
-SYS_OBJECTS = 	$(patsubst %.c,%.o,$(wildcard Generated_Source/PSoC5/*.c)) \
-				$(patsubst %.s,%.o,$(wildcard Generated_Source/PSoC5/*Gnu.s))
+# OBJECTS =		$(patsubst %.c,%.o,$(wildcard *.c)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard *.cpp))
+
+MBED_OBJECTS =	$(patsubst %.cpp,%.o,$(wildcard $(MBED_PATH)/*.cpp)) \
+				$(patsubst %.c,%.o,$(wildcard $(MBED_PATH)/common/*.c)) \
+				$(patsubst %.cpp,%.o,$(wildcard $(MBED_PATH)/common/*.cpp)) \
+				$(patsubst %.c,%.o,$(wildcard $(MBED_PATH)/target_cypress/*.c)) \
+				$(patsubst %.cpp,%.o,$(wildcard $(MBED_FS)/sd/*.cpp)) \
+				$(patsubst %.cpp,%.o,$(wildcard $(MBED_FS)/fat/*.cpp)) \
+				$(patsubst %.cpp,%.o,$(wildcard $(MBED_FS)/fat/ChaN/*.cpp))
+				
+MBED_INCLUDES =	$(MBED_PATH) \
+				$(MBED_PATH)/api \
+				$(MBED_PATH)/hal \
+				$(MBED_PATH)/target_cypress \
+				$(MBED_FS)/sd \
+				$(MBED_FS)/fat \
+				$(MBED_FS)/fat/ChaN
+
+MBED_INCLUDE_FILES = $(foreach FILE,$(MBED_INCLUDES),$(wildcard $(FILE)/*.h))
+
+# MONO_OBJECTS =	$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/*.c)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/*.cpp)) \
+# 				$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/*.c)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/*.cpp)) \
+# 				$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/ui/*.c)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/ui/*.cpp)) \
+# 				$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/ili9225g/*.c)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/ili9225g/*.cpp)) \
+# 				$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/wireless/*.c)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/wireless/*.cpp)) \
+# 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/media/*.cpp))
+#
+# MONO_INCLUDES =	$(MONO_FRAMEWORK_PATH) \
+# 				$(MONO_FRAMEWORK_PATH)/display \
+# 				$(MONO_FRAMEWORK_PATH)/display/ili9225g \
+# 				$(MONO_FRAMEWORK_PATH)/display/ui \
+# 				$(MONO_FRAMEWORK_PATH)/wireless \
+# 				$(MONO_FRAMEWORK_PATH)/media
+#
+# SYS_OBJECTS = 	$(patsubst %.c,%.o,$(wildcard $(CYPRESS_DIR)/*.c)) \
+# 				$(patsubst %.s,%.o,$(wildcard $(CYPRESS_DIR)/*Gnu.s))
 
 CC=$(ARCH)gcc
 CXX=$(ARCH)g++
@@ -28,15 +70,16 @@ OBJCOPY=$(ARCH)objcopy
 OBJDUMP=$(ARCH)objdump
 COPY=cp
 MKDIR=mkdir
+MONOPROG=monoprog
 ELFTOOL='C:\Program Files (x86)\Cypress\PSoC Creator\3.1\PSoC Creator\bin\cyelftool.exe'
-INCS = -I . -I ../mono_buildsystem/include
+INCS = -I . -I ${CYPRESS_DIR} -I$(INCLUDE_DIR) $(addprefix -I, $(MBED_INCLUDES) $(MONO_INCLUDES))
 CDEFS=
 ASDEFS=
 AS_FLAGS = -c -g -Wall -mcpu=cortex-m3 -mthumb -mthumb-interwork -march=armv7-m
 CC_FLAGS = -c -g -Wall -mcpu=cortex-m3 -mthumb $(OPTIMIZATION) -mthumb-interwork -fno-common -fmessage-length=0 -ffunction-sections -fdata-sections -march=armv7-m
 ONLY_C_FLAGS = -std=gnu99 
 ONLY_CPP_FLAGS = -std=gnu++98 -fno-rtti -fno-exceptions
-LDSCRIPT = -T ${LINKER_SCRIPT}
+LDSCRIPT = -T $(LINKER_SCRIPT)
 LD_FLAGS = -g -mcpu=cortex-m3 -mthumb -march=armv7-m -fno-rtti -Wl,--gc-sections -specs=nano.specs 
 LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 
@@ -44,9 +87,11 @@ LD_SYS_LIBS = -lstdc++ -lsupc++ -lm -lc -lgcc -lnosys
 #   -mfix-cortex-m3-ldrd -u _printf_float -u _scanf_float
 COPY_FLAGS = -j .text -j .eh_frame -j .rodata -j .ramvectors -j .noinit -j .data -j .bss -j .stack -j .heap -j .cyloadablemeta
 
-all: $(BUILD_DIR) $(TARGET).elf
+all: $(BUILD_DIR) mbed
 
 library: monoCyLib.a
+
+mbed: mbedlib.a
 
 $(BUILD_DIR):
 	@echo "creating build directory"
@@ -64,38 +109,27 @@ $(BUILD_DIR):
 	@echo "Compiling C++: $(notdir $<)"
 	@$(CXX) $(CC_FLAGS) $(ONLY_CPP_FLAGS) $(CDEFS) $(INCS) -o $(BUILD_DIR)/$(notdir $@) $<
 
-$(TARGET).elf: $(OBJECTS)
-	@echo "Linking $(notdir $@)"
-	@$(LD) -Wl,--start-group -o $@ $(addprefix $(BUILD_DIR)/, $(notdir $^)) $(MONO_CY_LIBRARY) -mthumb -march=armv7-m -mfix-cortex-m3-ldrd "-Wl,-Map,mono_project.map" -T $(LINKER_SCRIPT) -g -specs=nano.specs "-u\ _printf_float" $(LD_SYS_LIBS) -Wl,--gc-sections -Wl,--end-group
-
-$(TARGET).hex: $(TARGET).elf
-	$(ELFTOOL) -C $^ --flash_size $(FLASH_SIZE) --flash_row_size $(FLASH_ROW_SIZE)
-	$(OBJCOPY) -O ihex $(COPY_FLAGS) $< $@
-	$(ELFTOOL) -B $^ --flash_size $(FLASH_SIZE) --flash_array_size $(FLASH_ARRAY_SIZE) --flash_row_size $(FLASH_ROW_SIZE) --ee_array $(EE_ARRAY) --ee_row_size $(EE_ROW_SIZE)
-
-$(TARGET):  $(OBJS)  ${LINKER_SCRIPT}
-	@echo "Other link: $(OBJS)"
-	$(LD) $(LDSCRIPT) $(OBJS) -o $@
-
-monoCyLib.a: $(SYS_OBJECTS)
-	@echo "Linking static library"
-	@$(AR) rcs lib/$@ $(addprefix $(BUILD_DIR)/, $(notdir $^)) $(COMP_LIB)
-	@$(COPY) lib/$@ $(BUILD_DIR)/$@
-	@echo "Copying header files to include dir"
+mbedlib.a: $(MBED_OBJECTS)
+	@echo "Linking mbed framework ..."
+	$(AR) rcs $@ $(addprefix $(BUILD_DIR)/, $(notdir $^)) $(COMP_LIB) $(MONO_LIB)
+	@echo "Copying header files to include dir..."
 	@$(MKDIR) -p include
-	@$(COPY) $(CYPRESS_DIR)/*.h include/
+	@$(COPY) $(MBED_INCLUDE_FILES) include/.
 
-systemFiles:
-	@echo $(SYS_OBJECTS)
-	
-appFiles:
-	@echo $(OBJECTS)
+
+mbedFiles:
+	@echo $(MBED_OBJECTS)
+
+mbedIncludes:
+	@echo $(MBED_INCLUDE_FILES)
+
+includeFiles: 
+	@echo $(INCS)
+
 
 clean:
 	$(RM) $(addprefix $(BUILD_DIR)/, $(notdir $(OBJECTS))) $(addprefix $(BUILD_DIR)/, $(notdir $(SYS_OBJECTS))) $(TARGET).elf $(TARGET).bin
-
-summary: $(TARGET).elf
-	$(ELFTOOL) -S $(TARGET).elf
+	
 	
 
 ## $(LD) -Wl,--start-group $(LD_FLAGS) libs/CyCompLib.a $(LDSCRIPT) -o $@ $^ -Wl,--end-group $(LD_SYS_LIBS)

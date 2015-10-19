@@ -1,2 +1,5 @@
 mbedComp
 *.map
+include
+mbedlib.a
+build
