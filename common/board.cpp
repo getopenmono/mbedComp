@@ -17,15 +17,22 @@
 #include "wait_api.h"
 #include "toolchain.h"
 #include "mbed_interface.h"
+#include "PinNames.h"
 
 WEAK void mbed_die(void) {
     
     PWM_Start();
+    CyPins_SetPinDriveMode(SW_USER, CY_PINS_DM_RES_UP);
+    Bootloadable_SET_RUN_TYPE(Bootloadable_START_APP);
+    
     while(1)
     {
         PWM_WriteCompare1(0);
         wait(0.5);
         PWM_WriteCompare1(64);
         wait(0.25);
+        
+        if (CyPins_ReadPin(SW_USER) == 0)
+            CySoftwareReset();
     }
 }
