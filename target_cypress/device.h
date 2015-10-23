@@ -36,6 +36,7 @@
 #ifndef MONO_DISP_CTRL_HX8340
 #define DEVICE_SPI1				1
 #else
+#warning "Building without SPI1 hardware component!"
 #define DEVICE_SPI1				0
 #endif
 

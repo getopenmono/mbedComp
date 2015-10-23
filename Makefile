@@ -111,11 +111,10 @@ $(BUILD_DIR):
 
 mbedlib.a: $(MBED_OBJECTS)
 	@echo "Linking mbed framework ..."
-	$(AR) rcs $@ $(addprefix $(BUILD_DIR)/, $(notdir $^)) $(COMP_LIB) $(MONO_LIB)
+	$(AR) rcs $@ $(addprefix $(BUILD_DIR)/, $(notdir $^))
 	@echo "Copying header files to include dir..."
 	@$(MKDIR) -p include
 	@$(COPY) $(MBED_INCLUDE_FILES) include/.
-
 
 mbedFiles:
 	@echo $(MBED_OBJECTS)
@@ -128,7 +127,7 @@ includeFiles:
 
 
 clean:
-	$(RM) $(addprefix $(BUILD_DIR)/, $(notdir $(OBJECTS))) $(addprefix $(BUILD_DIR)/, $(notdir $(SYS_OBJECTS))) $(TARGET).elf $(TARGET).bin
+	$(RM) $(addprefix $(BUILD_DIR)/, $(notdir $(MBED_OBJECTS))) include/*.h mbedlib.a
 	
 	
 

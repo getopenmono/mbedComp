@@ -23,7 +23,7 @@ WEAK void mbed_die(void) {
     
     PWM_Start();
     CyPins_SetPinDriveMode(SW_USER, CY_PINS_DM_RES_UP);
-    Bootloadable_SET_RUN_TYPE(Bootloadable_START_APP);
+    Bootloadable_SET_RUN_TYPE(0); // force bootloader
     
     while(1)
     {

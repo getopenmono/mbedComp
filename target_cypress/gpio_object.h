@@ -26,14 +26,15 @@ extern "C" {
     
 typedef struct {
     PinName  pin;
-    uint32_t mask;
-
-    char *prt_dr;
-    char *prt_ps;
-    char *prt_dm;
-    char *prt_slw;
-    char *prt_byp;
-    char *prt_bie;
+    PinDirection dir;
+//    uint32_t mask;
+//
+//    char *prt_dr;
+//    char *prt_ps;
+//    char *prt_dm;
+//    char *prt_slw;
+//    char *prt_byp;
+//    char *prt_bie;
 } gpio_t;
 
 static inline void gpio_write(gpio_t *obj, int value) {

@@ -28,16 +28,19 @@ void gpio_init(gpio_t *obj, PinName pin) {
     if (pin == (PinName)NC)
         return;
 
-    obj->mask = 0x0;
 }
 
 void gpio_mode(gpio_t *obj, PinMode mode) {
     switch (mode) {
         case PullUp:
             CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_RES_UP);
+            if (obj->dir == PIN_INPUT)
+                gpio_write(obj, 1);
             break;
         case PullDown:
             CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_RES_DWN);
+            if (obj->dir == PIN_INPUT)
+                gpio_write(obj, 0);
             break;
         case OpenDrain:
             CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_OD_LO);
@@ -53,12 +56,14 @@ void gpio_mode(gpio_t *obj, PinMode mode) {
 
 void gpio_dir(gpio_t *obj, PinDirection direction) {
     MBED_ASSERT(obj->pin != (PinName)NC);
+    obj->dir = direction;
+    
     switch (direction) {
         case PIN_INPUT :
             CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_DIG_HIZ);
             break;
         case PIN_OUTPUT:
-            CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_RES_DWN);
+            CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_STRONG);
             break;
     }
 }
