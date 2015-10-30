@@ -16,7 +16,7 @@ SCENARIO("cy software platform spi uses FIFO correctly")
 {
     GIVEN("the spi is started")
     {
-        uint8_t sendData[4] = {0x13, 0x22, 0x40, 0x8A};
+        uint8_t sendData[6] = {0x13, 0x22, 0x40, 0x8A, 0x11, 0x70};
         
         
         SPI0_Start();
@@ -77,6 +77,45 @@ SCENARIO("cy software platform spi uses FIFO correctly")
         {
             SPI0_WriteTxData(sendData[0]);
             SPI0_WriteTxData(sendData[1]);
+            
+            THEN("the read buffer should be 2")
+            {
+                REQUIRE(SPI0_GetRxBufferSize() == 2);
+            }
+            
+            THEN("the first two bytes is returned")
+            {
+                REQUIRE( SPI0_ReadRxData() == sendData[0] );
+                REQUIRE( SPI0_ReadRxData() == sendData[1] );
+            }
+            
+            SPI0_WriteTxData(sendData[2]);
+            SPI0_WriteTxData(sendData[3]);
+            
+            THEN("the read buffer should be 2")
+            {
+                REQUIRE(SPI0_GetRxBufferSize() == 2);
+            }
+            
+            THEN("byte 3 and 4 is returned")
+            {
+                REQUIRE( SPI0_ReadRxData() == sendData[2] );
+                REQUIRE( SPI0_ReadRxData() == sendData[3] );
+            }
+            
+            SPI0_WriteTxData(sendData[4]);
+            SPI0_WriteTxData(sendData[5]);
+            
+            THEN("the read buffer should be 2")
+            {
+                REQUIRE(SPI0_GetRxBufferSize() == 2);
+            }
+            
+            THEN("byte 5 and 6 is returned")
+            {
+                REQUIRE( SPI0_ReadRxData() == sendData[4] );
+                REQUIRE( SPI0_ReadRxData() == sendData[5] );
+            }
         }
     }
 }
