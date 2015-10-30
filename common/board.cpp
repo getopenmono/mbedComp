@@ -28,9 +28,9 @@ WEAK void mbed_die(void) {
     while(1)
     {
         PWM_WriteCompare1(0);
-        wait(0.5);
+        CyDelay(500);
         PWM_WriteCompare1(64);
-        wait(0.25);
+        CyDelay(250);
         
         if (CyPins_ReadPin(SW_USER) == 0)
             CySoftwareReset();
