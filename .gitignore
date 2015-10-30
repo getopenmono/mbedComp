@@ -3,3 +3,4 @@ mbedComp
 include
 mbedlib.a
 build
+test/tests.xcodeproj

@@ -82,6 +82,7 @@ typedef enum {
     PullUp = 0,
     PullDown = 3,
     PullNone = 2,
+    PullBoth = 5,
     Repeater = 1,
     OpenDrain = 4,
     PullDefault = PullDown
