@@ -2,6 +2,8 @@
 #include <project.h>
 
 #include "i2c_api.h"
+#include <mbed_debug.h>
+#include <mbed_error.h>
 
 
 void i2c_init(i2c_t *obj, PinName sda, PinName scl)
@@ -55,12 +57,16 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
     
     int status = I2C_MasterReadBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
     
-    if (status != 0)
+    if (status != I2C_MSTR_NO_ERROR)
+    {
+        debug("mbed I2C read failed with error: %i", status);
         return status;
+    }
+    
     
     while((I2C_MasterStatus() & I2C_MSTAT_XFER_INP) == 1);
     
-    return status;
+    return length;
 }
 
 /** Blocking sending data.
@@ -82,12 +88,15 @@ int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
     
     int status = I2C_MasterWriteBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
     
-    if (status != 0)
+    if (status != I2C_MSTR_NO_ERROR)
+    {
+        debug("mbed I2C write failed with err: %i\n",status);
         return status;
+    }
     
     while ((I2C_MasterStatus() & I2C_MSTAT_XFER_INP) == 1);
     
-    return status;
+    return length;
 }
 
 /** Reset I2C peripheral. TODO: The action here. Most of the implementation sends stop().
@@ -105,6 +114,7 @@ void i2c_reset(i2c_t *obj)
  */
 int  i2c_byte_read(i2c_t *obj, int last)
 {
+    error("i2c_byte_read not implemented!");
     return 0;
 }
 
@@ -115,5 +125,6 @@ int  i2c_byte_read(i2c_t *obj, int last)
  */
 int  i2c_byte_write(i2c_t *obj, int data)
 {
+    error("i2c_byte_write not implemented!");
     return 0;
 }

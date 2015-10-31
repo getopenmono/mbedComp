@@ -12,12 +12,11 @@ extern "C" {
 #include <cy_spi.h>
 }
 
-SCENARIO("cy software platform spi uses FIFO correctly")
+SCENARIO("cy software platform spi uses FIFO correctly","[cy_spi]")
 {
     GIVEN("the spi is started")
     {
         uint8_t sendData[6] = {0x13, 0x22, 0x40, 0x8A, 0x11, 0x70};
-        
         
         SPI0_Start();
         
@@ -44,6 +43,7 @@ SCENARIO("cy software platform spi uses FIFO correctly")
             
             THEN("after read the empty flag must be set")
             {
+                SPI0_ReadRxData();
                 uint8_t mask = SPI0_ReadTxStatus() & SPI0_STS_TX_FIFO_EMPTY;
                 REQUIRE(mask == SPI0_STS_TX_FIFO_EMPTY);
             }
@@ -56,8 +56,8 @@ SCENARIO("cy software platform spi uses FIFO correctly")
             
             THEN("the FIFO should be full")
             {
-                uint8_t mask = SPI0_ReadTxStatus() | ~SPI0_STS_TX_FIFO_NOT_FULL;
-                REQUIRE(~mask == SPI0_STS_TX_FIFO_NOT_FULL);
+                uint8_t mask = ~(SPI0_ReadTxStatus() | ~SPI0_STS_TX_FIFO_NOT_FULL);
+                REQUIRE(mask == SPI0_STS_TX_FIFO_NOT_FULL);
             }
             
             THEN("the read fifo should be 4")
@@ -78,9 +78,10 @@ SCENARIO("cy software platform spi uses FIFO correctly")
             SPI0_WriteTxData(sendData[0]);
             SPI0_WriteTxData(sendData[1]);
             
-            THEN("the read buffer should be 2")
+            THEN("first, the read buffer should be 2")
             {
-                REQUIRE(SPI0_GetRxBufferSize() == 2);
+                uint8_t len = SPI0_GetRxBufferSize();
+                REQUIRE(len == 2);
             }
             
             THEN("the first two bytes is returned")
@@ -89,11 +90,14 @@ SCENARIO("cy software platform spi uses FIFO correctly")
                 REQUIRE( SPI0_ReadRxData() == sendData[1] );
             }
             
+            SPI0_ReadRxData();
+            SPI0_ReadRxData();
             SPI0_WriteTxData(sendData[2]);
             SPI0_WriteTxData(sendData[3]);
             
-            THEN("the read buffer should be 2")
+            THEN("second, the read buffer should be 2")
             {
+                
                 REQUIRE(SPI0_GetRxBufferSize() == 2);
             }
             
@@ -103,10 +107,12 @@ SCENARIO("cy software platform spi uses FIFO correctly")
                 REQUIRE( SPI0_ReadRxData() == sendData[3] );
             }
             
+            SPI0_ReadRxData();
+            SPI0_ReadRxData();
             SPI0_WriteTxData(sendData[4]);
             SPI0_WriteTxData(sendData[5]);
             
-            THEN("the read buffer should be 2")
+            THEN("third, the read buffer should be 2")
             {
                 REQUIRE(SPI0_GetRxBufferSize() == 2);
             }

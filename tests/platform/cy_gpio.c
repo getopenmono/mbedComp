@@ -13,6 +13,11 @@ void CyDelayUs(int us)
     
 }
 
+void CyDelay(int ms)
+{
+    
+}
+
 struct cy_pin pinList[100];
 
 void CyPins_SetPin(int pin)
@@ -28,4 +33,14 @@ void CyPins_ClearPin(int pin)
 int  CyPins_ReadPin(int pin)
 {
     return pinList[pin].val;
+}
+
+void CyPins_SetPinDriveMode(int pin, int mode)
+{
+    pinList[pin].mode = mode;
+}
+
+int CyPins_GetPinDriveMode(int pin)
+{
+    return pinList[pin].mode;
 }

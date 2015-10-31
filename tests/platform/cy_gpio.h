@@ -12,6 +12,18 @@
 #include "pins.h"
 #include <stdint.h>
 
+enum PinModes
+{
+    CY_PINS_DM_AN_HIZ,
+    CY_PINS_DM_DIG_HIZ,
+    CY_PINS_DM_RES_UP,
+    CY_PINS_DM_RES_DWN,
+    CY_PINS_DM_OD_LO,
+    CY_PINS_DM_OD_HI,
+    CY_PINS_DM_STRONG,
+    CY_PINS_DM_RES_UPDWN
+};
+
 struct cy_pin
 {
     uint8_t val;
@@ -22,5 +34,8 @@ struct cy_pin
 void CyPins_SetPin(int pin);
 void CyPins_ClearPin(int pin);
 int  CyPins_ReadPin(int pin);
+
+void CyPins_SetPinDriveMode(int pin, int mode);
+int  CyPins_GetPinDriveMode(int pin);
 
 #endif /* cy_gpio_h */

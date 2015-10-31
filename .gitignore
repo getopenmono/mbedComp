@@ -3,4 +3,5 @@ mbedComp
 include
 mbedlib.a
 build
-test/tests.xcodeproj
+tests/tests.xcodeproj
+tests/DerivedData
