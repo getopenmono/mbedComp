@@ -29,8 +29,8 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
             
             WHEN("we read the echo from 0x62")
             {
-                char resp[1];
-                int nack = i2c.read(slaveAddr, resp, 1);
+                uint8_t resp[1];
+                int nack = i2c.read(slaveAddr, (char*)resp, 1);
                 
                 THEN("bus should respond ACK")
                 {
@@ -56,8 +56,8 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
             
             WHEN("reading the echoed response")
             {
-                char resp[3];
-                int nack = i2c.read(slaveAddr, resp, 3);
+                uint8_t resp[3];
+                int nack = i2c.read(slaveAddr, (char*)resp, 3);
                 
                 THEN("bus must ACK")
                 {
@@ -66,9 +66,9 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
                 
                 THEN("response should match send data")
                 {
-                    char a = resp[0];
-                    char b = resp[1];
-                    char c = resp[2];
+                    uint8_t a = resp[0];
+                    uint8_t b = resp[1];
+                    uint8_t c = resp[2];
                     REQUIRE(a == sendData[0]);
                     REQUIRE(b == sendData[1]);
                     REQUIRE(c == sendData[2]);
@@ -87,8 +87,8 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
             
             WHEN("reading response")
             {
-                char resp[2];
-                int nack = i2c.read(slaveAddr, resp, 2);
+                uint8_t resp[2];
+                int nack = i2c.read(slaveAddr, (char*)resp, 2);
                 
                 THEN("bus must ACK")
                 {
@@ -112,8 +112,8 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
                     
                     WHEN("read response for next 2 bytes")
                     {
-                        char resp[2];
-                        nack = i2c.read(slaveAddr, resp, 2);
+                        uint8_t resp[2];
+                        nack = i2c.read(slaveAddr, (char*)resp, 2);
                         
                         THEN("bus must ACK")
                         {
@@ -123,7 +123,7 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
                         THEN("response must match")
                         {
                             REQUIRE(resp[0] == sendData[2]);
-                            REQUIRE(resp[0] == sendData[3]);
+                            REQUIRE(resp[1] == sendData[3]);
                         }
                         
                         WHEN("sending last 2 bytes")
@@ -137,8 +137,8 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
                             
                             WHEN("reading last 2 bytes")
                             {
-                                char resp[2];
-                                nack = i2c.read(slaveAddr, resp, 2);
+                                uint8_t resp[2];
+                                nack = i2c.read(slaveAddr, (char*)resp, 2);
                                 
                                 THEN("bus must ACK")
                                 {
@@ -165,7 +165,7 @@ SCENARIO("mbed I2C master read/write must work","[i2c]")
         
         WHEN("writing to non existing slave")
         {
-            char nack = i2c.write(slaveAddr, (char*)sendData, 2);
+            uint8_t nack = i2c.write(slaveAddr, (char*)sendData, 2);
             
             THEN("bus should not ACK")
             {

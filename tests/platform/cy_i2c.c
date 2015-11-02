@@ -40,7 +40,7 @@ uint8_t I2C_MasterWriteBuf(uint8_t slaveAddress, uint8_t * wrData, uint8_t cnt, 
         return I2C_MSTR_NOT_READY;
     
     if (slaveAddress != I2C_slaveAddr)
-        return I2C_MSTR_NO_ERROR;
+        return I2C_MSTR_ERR_LB_NAK;
     
     int ptr = 0;
     
