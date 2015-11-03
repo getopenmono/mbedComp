@@ -5,3 +5,6 @@ mbedlib.a
 build
 tests/tests.xcodeproj
 tests/DerivedData
+tests/testCase/main.cpp
+
+*.o

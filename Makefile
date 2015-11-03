@@ -37,6 +37,8 @@ MBED_INCLUDES =	$(MBED_PATH) \
 
 MBED_INCLUDE_FILES = $(foreach FILE,$(MBED_INCLUDES),$(wildcard $(FILE)/*.h))
 
+MBED_TARGET_OBJECTS = $(addprefix ./$(BUILD_DIR)/, $(MBED_OBJECTS))
+
 # MONO_OBJECTS =	$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/*.c)) \
 # 				$(patsubst %.cpp,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/*.cpp)) \
 # 				$(patsubst %.c,%.o,$(wildcard $(MONO_FRAMEWORK_PATH)/display/*.c)) \
@@ -101,23 +103,29 @@ $(BUILD_DIR):
 	@echo "Assembling: $(notdir $<)"
 	@$(AS) $(AS_FLAGS) $(INCS) -o $(BUILD_DIR)/$(notdir $@) $<
 
-.c.o: $(BUILD_DIR)
-	@echo "Compiling C: $(notdir $<)"
-	@$(CC) $(CC_FLAGS) $(ONLY_C_FLAGS) $(CDEFS) $(INCS) -o $(BUILD_DIR)/$(notdir $@) $<
+$(BUILD_DIR)/%.o: %.c
+	@echo "Compiling mbed C: $<"
+	@$(MKDIR) -p $(dir $@)
+	@$(CC) $(CC_FLAGS) $(ONLY_C_FLAGS) $(CDEFS) $(INCS) -o $@ $<
 
-.cpp.o: $(BUILD_DIR)
-	@echo "Compiling C++: $(notdir $<)"
-	@$(CXX) $(CC_FLAGS) $(ONLY_CPP_FLAGS) $(CDEFS) $(INCS) -o $(BUILD_DIR)/$(notdir $@) $<
+$(BUILD_DIR)/%.o: %.cpp
+	@echo "Compiling mbed C++: $<"
+	@$(MKDIR) -p $(dir $@)
+	@$(CXX) $(CC_FLAGS) $(ONLY_CPP_FLAGS) $(CDEFS) $(INCS) -o $@ $<
 
-mbedlib.a: $(MBED_OBJECTS)
+# .cpp.o: $(BUILD_DIR)
+# 	@echo "Compiling C++: $(notdir $<)"
+# 	@$(CXX) $(CC_FLAGS) $(ONLY_CPP_FLAGS) $(CDEFS) $(INCS) -o $(BUILD_DIR)/$(notdir $@) $<
+
+mbedlib.a: $(MBED_TARGET_OBJECTS)
 	@echo "Linking mbed framework ..."
-	$(AR) rcs $@ $(addprefix $(BUILD_DIR)/, $(notdir $^))
+	$(AR) rcs $@ $^
 	@echo "Copying header files to include dir..."
 	@$(MKDIR) -p include
 	@$(COPY) $(MBED_INCLUDE_FILES) include/.
 
 mbedFiles:
-	@echo $(MBED_OBJECTS)
+	@echo $(MBED_TARGET_OBJECTS)
 
 mbedIncludes:
 	@echo $(MBED_INCLUDE_FILES)
