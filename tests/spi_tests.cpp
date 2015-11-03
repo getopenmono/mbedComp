@@ -141,6 +141,22 @@ SCENARIO("mbed SPI class sends data correctly", "[spi]")
                 REQUIRE( bytes == *((uint8_t*)sendData) );
             }
         }
+        
+        WHEN("sending more than one byte data types")
+        {
+            uint16_t pixel = 0x1234;
+            uint8_t a = device.write(pixel >> 8);
+            uint8_t b = device.write(pixel);
+            
+            device.format(16);
+            uint16_t resp = device.write(pixel);
+            
+            THEN("byte order must match MSB first")
+            {
+                REQUIRE(a == resp >> 8);
+                REQUIRE(b == (resp & 0xff));
+            }
+        }
     }
     
 }

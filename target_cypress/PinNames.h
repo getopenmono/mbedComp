@@ -29,7 +29,6 @@ typedef enum {
 typedef enum {
     HARD_WIRED,
     
-    
     // Auxillary pins
     SW_USER = CYREG_PRT4_PC6,                   /**< User button pin, active low */
     BUZZER = CYREG_PRT5_PC3,                    /**< Buzzer PWM signal pin */

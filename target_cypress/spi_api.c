@@ -7,6 +7,7 @@
 //
 
 #include "spi_api.h"
+#include <mbed_error.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -152,6 +153,11 @@ int  spi_master_write (spi_t *obj, int value)
         
         return retval;
     }
+    else
+    {
+        error("Unsupported format: %i, valid formats are: 8,16 & 32.\n",obj->bitmode);
+    }
+        
     
     return 0xFF;
 }

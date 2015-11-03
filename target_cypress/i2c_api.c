@@ -59,12 +59,12 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
     
     if (status != I2C_MSTR_NO_ERROR)
     {
-        debug("mbed I2C read failed with error: %i", status);
+        debug("mbed I2C read failed with error: %i\n\r", status);
         return status;
     }
     
     
-    while((I2C_MasterStatus() & I2C_MSTAT_XFER_INP) == 1);
+    while((I2C_MasterStatus() & I2C_MSTAT_RD_CMPLT) == 0);
     
     return length;
 }
@@ -90,11 +90,11 @@ int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
     
     if (status != I2C_MSTR_NO_ERROR)
     {
-        debug("mbed I2C write failed with err: %i\n",status);
+        debug("mbed I2C write failed with err: %i\n\r",status);
         return status;
     }
     
-    while ((I2C_MasterStatus() & I2C_MSTAT_XFER_INP) == 1);
+    while ((I2C_MasterStatus() & I2C_MSTAT_WR_CMPLT) == 0);
     
     return length;
 }
