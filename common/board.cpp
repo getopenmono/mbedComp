@@ -33,6 +33,9 @@ WEAK void mbed_die(void) {
         CyDelay(250);
         
         if (CyPins_ReadPin(SW_USER) == 0)
+        {
+            CyDelay(200); // allow yser to release btn, to not go into bootloader
             CySoftwareReset();
+        }
     }
 }

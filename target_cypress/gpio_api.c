@@ -46,7 +46,10 @@ void gpio_mode(gpio_t *obj, PinMode mode) {
             CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_OD_LO);
             break;
         case PullNone:
-            CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_STRONG);
+            if (obj->dir == PIN_INPUT)
+                CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_DIG_HIZ);
+            else
+                CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_STRONG);
             break;
         default:
             CyPins_SetPinDriveMode(obj->pin, CY_PINS_DM_RES_DWN);
