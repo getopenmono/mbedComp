@@ -22,15 +22,23 @@
 WEAK void mbed_die(void) {
     
     PWM_Start();
+    PWM_WriteCompare2(0);
     CyPins_SetPinDriveMode(SW_USER, CY_PINS_DM_RES_UP);
-    Bootloadable_SET_RUN_TYPE(0); // force bootloader
+    Bootloadable_SET_RUN_TYPE(0); // do not force bootloader
     
     while(1)
     {
-        PWM_WriteCompare1(0);
-        CyDelay(500);
-        PWM_WriteCompare1(64);
+        PWM_WriteCompare1(16);
         CyDelay(250);
+        PWM_WriteCompare1(64);
+        
+        if (CyPins_ReadPin(SW_USER) == 0)
+        {
+            CyDelay(200); // allow yser to release btn, to not go into bootloader
+            CySoftwareReset();
+        }
+        
+        CyDelay(400);
         
         if (CyPins_ReadPin(SW_USER) == 0)
         {

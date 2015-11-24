@@ -91,7 +91,7 @@ void us_ticker_set_interrupt(timestamp_t timestamp) {
     
     if (now > utime)
     {
-        PWM_WriteCompare2(32);
+        //PWM_WriteCompare2(32);
         utime = now;
     }
     
