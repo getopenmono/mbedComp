@@ -74,7 +74,7 @@ COPY=cp
 MKDIR=mkdir
 MONOPROG=monoprog
 ELFTOOL='C:\Program Files (x86)\Cypress\PSoC Creator\3.1\PSoC Creator\bin\cyelftool.exe'
-INCS = -I . -I ${CYPRESS_DIR} -I$(INCLUDE_DIR) $(addprefix -I, $(MBED_INCLUDES) $(MONO_INCLUDES))
+INCS = -I . $(addprefix -I, $(MONO_INCLUDES) $(MBED_INCLUDES) $(INCLUDE_DIR)) 
 CDEFS=
 ASDEFS=
 AS_FLAGS = -c -g -Wall -mcpu=cortex-m3 -mthumb -mthumb-interwork -march=armv7-m
@@ -121,8 +121,8 @@ mbedlib.a: $(MBED_TARGET_OBJECTS)
 	@echo "Linking mbed framework ..."
 	$(AR) rcs $@ $^
 	@echo "Copying header files to include dir..."
-	@$(MKDIR) -p include
-	@$(COPY) $(MBED_INCLUDE_FILES) include/.
+	#@$(MKDIR) -p include
+	#@$(COPY) $(MBED_INCLUDE_FILES) include/.
 
 mbedFiles:
 	@echo $(MBED_TARGET_OBJECTS)
@@ -135,7 +135,7 @@ includeFiles:
 
 
 clean:
-	$(RM) $(addprefix $(BUILD_DIR)/, $(notdir $(MBED_OBJECTS))) include/*.h mbedlib.a
+	$(RM) $(MBED_TARGET_OBJECTS) include/*.h mbedlib.a
 	
 	
 
