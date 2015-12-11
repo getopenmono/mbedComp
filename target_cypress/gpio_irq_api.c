@@ -21,28 +21,33 @@
 #include <stdio.h>
 //#include "cmsis.h"
 
-#define CHANNEL_NUM     64 // 8 ports with 8 pins each (PRT15 reserved)
+#define CHANNEL_COUNT (9*8) // 9 ports with 8 pins each
+#define PICU_COUNT 9
 
-static uint32_t channel_ids[CHANNEL_NUM] = {0};
+static uint32_t channel_ids[CHANNEL_COUNT] = {0};
 static gpio_irq_handler irq_handler;
 
 
 static void handle_interrupt_in(void) {
-    uint8_t picus[8] =
+    
+    uint8_t picus[PICU_COUNT] =
     {
         CY_GET_REG8(CYREG_PICU0_INTSTAT),
         CY_GET_REG8(CYREG_PICU1_INTSTAT),
         CY_GET_REG8(CYREG_PICU2_INTSTAT),
         CY_GET_REG8(CYREG_PICU3_INTSTAT),
+        
         CY_GET_REG8(CYREG_PICU4_INTSTAT),
         CY_GET_REG8(CYREG_PICU5_INTSTAT),
         CY_GET_REG8(CYREG_PICU6_INTSTAT),
-        CY_GET_REG8(CYREG_PICU12_INTSTAT)
+        CY_GET_REG8(CYREG_PICU12_INTSTAT),
+        
+        CY_GET_REG8(CYREG_PICU15_INTSTAT)
     };
     
     uint8_t bitloc;
     
-    for (uint8_t p=0; p<8;p++)
+    for (uint8_t p=0; p<PICU_COUNT;p++)
     {
         while (picus[p] > 0) {
             // get the position of the MSB in INTSTAT register
@@ -51,7 +56,13 @@ static void handle_interrupt_in(void) {
             //test to see if there is an installed interrupt
             if (channel_ids[p*8+bitloc] != 0)
             {
-                uint8_t type = CY_GET_REG8( CYDEV_PICU_INTTYPE_BASE + (p*8+bitloc) );
+                uint8_t type = 0;
+                if (p < 7)
+                    type = CY_GET_REG8( CYDEV_PICU_INTTYPE_BASE + (p*8+bitloc) );
+                else if (p == 7)
+                    type = CY_GET_REG8( CYDEV_PICU_INTTYPE_BASE + (12*8+bitloc) );
+                else if (p == 8)
+                    type = CY_GET_REG8( CYDEV_PICU_INTTYPE_BASE + (15*8+bitloc) );
                 
                 if (type == 1)
                     irq_handler(channel_ids[p*8+bitloc], IRQ_RISE);
@@ -142,10 +153,8 @@ int  gpio_irq_init(gpio_irq_t *obj, PinName pin, gpio_irq_handler handler, uint3
         obj->portNum = 15;
         obj->irqLine = PICU15_IRQ_LINE;
         obj->picuStat = CYREG_PICU15_INTSTAT;
-        //obj->snapShotAddr = CYREG_PICU15_SNAP;
+        obj->snapShotAddr = CYREG_PICU_15_SNAP_15;
         obj->inttypeReg = CYDEV_PICU_INTTYPE_PICU15_BASE + (pin & 0x07);
-        error("Interrupts at pins on PRT15 is not supported.");
-        return -1;
     }
     else
     {
@@ -153,12 +162,21 @@ int  gpio_irq_init(gpio_irq_t *obj, PinName pin, gpio_irq_handler handler, uint3
     }
     
     // route the interrupt line to the fixed function component (which is PICU)
-    uint32_t idmuxAddr = CYDEV_IDMUX_BASE + obj->irqLine;
-    uint8_t idmuxVal = ~( 0x03 << ((obj->portNum % 2)*2) );
+    uint32_t idmuxAddr = CYDEV_IDMUX_BASE + (obj->irqLine)/4; // 4 IDMUXes per register
+    uint8_t idmuxVal = ~( 0x03 << ((obj->irqLine % 4)*2) );
     CY_SET_REG8(idmuxAddr, CY_GET_REG8(idmuxAddr) & idmuxVal);
     
+    int index;
+    
+    // calc the interrupt table index
+    if      (obj->portNum == 15)
+        index = 8*8 + (pin & 0x07);
+    else if (obj->portNum == 12)
+        index = 7*8 + (pin & 0x07);
+    else
+        index = obj->portNum*8 + (pin & 0x07);
+    
     // put us in the interrupt table
-    int index = obj->portNum*8 + (pin & 0x07);
     channel_ids[index] = id;
     obj->ch = index;
     
