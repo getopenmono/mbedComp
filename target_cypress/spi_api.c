@@ -16,32 +16,32 @@ extern "C" {
 }
 #endif
 
-#if DEVICE_SPI1
-static const int spi_ports_num = 2;
-#else
-static const int spi_ports_num = 1;
-#endif
+static const int spi_ports_num = 3;
 
-struct spi_port_s spi_ports[1+DEVICE_SPI1] =
+struct spi_port_s spi_ports[3] =
 {
     {
-        RP_SPI_HARD_WIRE, NC, 8,0,
-        &SPI0_Start, &SPI0_Stop,
-        &SPI0_WriteTxData, &SPI0_ReadTxStatus,
-        &SPI0_GetRxBufferSize, &SPI0_ReadRxData
-    }
-#if DEVICE_SPI1
-	,{
+        RP_SPI_HARD_WIRE, RP_SPI_CS, 8, 1,
+        &SPI_RP_Start, &SPI_RP_Stop,
+        &SPI_RP_WriteTxData, &SPI_RP_ReadTxStatus,
+        &SPI_RP_GetRxBufferSize, &SPI_RP_ReadRxData
+    },
+	{
         TFT_SPI_HARD_WIRE, TFT_SPI_CS, 8, 1,
         &SPI1_Start, &SPI1_Stop,
         &SPI1_WriteTxData, &SPI1_ReadTxStatus,
         &SPI1_GetRxBufferSize, &SPI1_ReadRxData
+    },
+    {
+        SD_SPI_HARD_WIRE, SD_SPI_CS, 8, 1,
+        &SPI_SD_Start, &SPI_SD_Stop,
+        &SPI_SD_WriteTxData, &SPI_SD_ReadTxStatus,
+        &SPI_SD_GetRxBufferSize, SPI_SD_ReadRxData
     }
-#endif
 };
 
 
-void spi_init         (spi_t *obj, PinName mosi, PinName miso, PinName sclk, PinName ssel)
+void spi_init(spi_t *obj, PinName mosi, PinName miso, PinName sclk, PinName ssel)
 {
     for (int i=0; i<spi_ports_num; i++)
     {
@@ -65,9 +65,6 @@ void spi_init         (spi_t *obj, PinName mosi, PinName miso, PinName sclk, Pin
     obj->cs = NC;
     obj->spiPortNum = -1;
     obj->port = NULL;
-    
-    //CyPins_SetPinDriveMode(ssel, CY_PINS_DM_STRONG);
-    //CyPins_SetPin(ssel); // set (active low) CS
 }
 
 void spi_free         (spi_t *obj)
@@ -78,12 +75,12 @@ void spi_free         (spi_t *obj)
     obj->port->SPI_Stop();
 }
 
-void spi_format       (spi_t *obj, int bits, int mode, int slave)
+void spi_format(spi_t *obj, int bits, int mode, int slave)
 {
     obj->bitmode = bits;
 }
 
-void spi_frequency    (spi_t *obj, int hz)
+void spi_frequency(spi_t *obj, int hz)
 {
     
 }
@@ -104,7 +101,7 @@ int  spi_master_write (spi_t *obj, int value)
     {
         obj->port->SPI_WriteTxData(value);
         int to = 0;
-        while((obj->port->SPI_ReadTxStatus() & SPI0_STS_BYTE_COMPLETE) == 0 && timeout > to++)
+        while((obj->port->SPI_ReadTxStatus() & SPI_RP_STS_BYTE_COMPLETE) == 0 && timeout > to++)
         {
             CyDelayUs(1);
         }
@@ -126,7 +123,7 @@ int  spi_master_write (spi_t *obj, int value)
             int to = 0;
             obj->port->SPI_WriteTxData(valarray[c]);
             
-            while ((obj->port->SPI_ReadTxStatus() & SPI0_STS_BYTE_COMPLETE) == 0 && to++ < timeout) {
+            while ((obj->port->SPI_ReadTxStatus() & SPI_RP_STS_BYTE_COMPLETE) == 0 && to++ < timeout) {
                 CyDelayUs(1);
             }
             
@@ -144,7 +141,7 @@ int  spi_master_write (spi_t *obj, int value)
             int to = 0;
             obj->port->SPI_WriteTxData(valarray[c]);
             
-            while ((obj->port->SPI_ReadTxStatus() & SPI0_STS_BYTE_COMPLETE) == 0 && to++ < timeout) {
+            while ((obj->port->SPI_ReadTxStatus() & SPI_RP_STS_BYTE_COMPLETE) == 0 && to++ < timeout) {
                 CyDelayUs(1);
             }
             
