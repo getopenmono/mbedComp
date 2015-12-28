@@ -73,6 +73,9 @@ typedef enum {
     ARD_D9_JC_TIP    = CYREG_PRT12_PC3,
     ARD_D10_JC_RING1 = CYREG_PRT0_PC2,
     ARD_D11_JC_RING2 = CYREG_PRT0_PC1,
+    JC_JPI_EN        = CYREG_PRT12_PC2,
+    JC_JPO_EN        = CYREG_PRT12_PC4,
+    JC_SL_CTRL       = CYREG_PRT0_PC0,
     
     // Arduino Digital pins
     ARD_D0 = CYREG_PRT4_PC0,
