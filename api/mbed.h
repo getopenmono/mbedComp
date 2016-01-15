@@ -10,3 +10,4 @@
 #include "FileSystemLike.h"
 #include "FunctionPointer.h"
 #include "Ticker.h"
+#include "us_ticker_api.h"

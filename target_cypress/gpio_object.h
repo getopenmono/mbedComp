@@ -39,6 +39,12 @@ typedef struct {
 
 static inline void gpio_write(gpio_t *obj, int value) {
     MBED_ASSERT(obj->pin != (PinName)NC);
+    
+    if (obj->pin == HARD_WIRED)
+    {
+        return;
+    }
+    
     if (value)
         CyPins_SetPin(obj->pin);
     else
@@ -51,7 +57,7 @@ static inline int gpio_read(gpio_t *obj) {
 }
 
 static inline int gpio_is_connected(const gpio_t *obj) {
-    return obj->pin != (PinName)NC;
+    return obj->pin != (PinName)NC && obj->pin != HARD_WIRED;
 }
 
 #ifdef __cplusplus
