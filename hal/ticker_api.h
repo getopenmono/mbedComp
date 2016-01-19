@@ -28,7 +28,11 @@ typedef struct ticker_event_s {
     struct ticker_event_s *next;      /**< Next event in the queue */
 } ticker_event_t;
 
+#ifndef EMUNO
 typedef void (*ticker_event_handler)(uint32_t id);
+#else
+typedef void (*ticker_event_handler)(uint64_t id);
+#endif
 
 /** Ticker's interface structure - required API for a ticker
  */

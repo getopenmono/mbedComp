@@ -29,8 +29,11 @@ TimerEvent::TimerEvent() : event(), _ticker_data(get_us_ticker_data()) {
 TimerEvent::TimerEvent(const ticker_data_t *data) : event(), _ticker_data(data) {
     ticker_set_handler(_ticker_data, (&TimerEvent::irq));
 }
-
+#ifndef EMUNO
 void TimerEvent::irq(uint32_t id) {
+#else
+void TimerEvent::irq(uint64_t id) {
+#endif
     TimerEvent *timer_event = (TimerEvent*)id;
     timer_event->handler();
 }
@@ -41,7 +44,11 @@ TimerEvent::~TimerEvent() {
 
 // insert in to linked list
 void TimerEvent::insert(timestamp_t timestamp) {
+#ifndef EMUNO
     ticker_insert_event(_ticker_data, &event, timestamp, (uint32_t)this);
+#else
+    ticker_insert_event(_ticker_data, &event, timestamp, (uint64_t)this);
+#endif
 }
 
 void TimerEvent::remove() {

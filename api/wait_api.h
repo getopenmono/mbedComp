@@ -40,12 +40,14 @@ extern "C" {
  * }
  */
 
+#ifndef EMUNO
 /** Waits for a number of seconds, with microsecond resolution (within
  *  the accuracy of single precision floating point).
  *
  *  @param s number of seconds to wait
  */
 void wait(float s);
+#endif
 
 /** Waits a number of milliseconds.
  *

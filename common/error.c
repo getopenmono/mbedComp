@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <project.h>
+
 #include <stdlib.h>
 #include <stdarg.h>
 #include "device.h"
@@ -29,5 +32,26 @@ WEAK void error(const char* format, ...) {
     vfprintf(stderr, format, arg);
     va_end(arg);
 #endif
+    
+#ifndef EMUNO
+    
+    PWM_WriteCompare2(64);
+    CyDelay(200);
+    PWM_WriteCompare2(0);
+    CyDelay(600);
+    PWM_WriteCompare2(64);
+    CyDelay(200);
+    PWM_WriteCompare2(0);
+    
     exit(1);
+    
+#else
+    
+    printf("EMUNO HALT!");
+    while(1);
+    
+#endif
+    
+//    Bootloadable_SET_RUN_TYPE(Bootloadable_START_APP);
+//    CySoftwareReset();
 }

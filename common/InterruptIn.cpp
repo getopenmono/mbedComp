@@ -23,7 +23,11 @@ InterruptIn::InterruptIn(PinName pin) : gpio(),
                                         gpio_irq(),
                                         _rise(),
                                         _fall() {
+#ifndef EMUNO
     gpio_irq_init(&gpio_irq, pin, (&InterruptIn::_irq_handler), (uint32_t)this);
+#else
+    gpio_irq_init(&gpio_irq, pin, (&InterruptIn::_irq_handler), (uint64_t)this);
+#endif
     gpio_init_in(&gpio, pin);
 }
 

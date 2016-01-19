@@ -29,7 +29,11 @@ public:
 
     /** The handler registered with the underlying timer interrupt
      */
+#ifndef EMUNO
     static void irq(uint32_t id);
+#else
+    static void irq(uint64_t id);
+#endif
 
     /** Destruction removes it...
      */
