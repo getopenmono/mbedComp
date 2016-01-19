@@ -55,8 +55,11 @@ void ticker_irq_handler(const ticker_data_t *const data) {
     }
     
 }
-
+#ifndef EMUNO
 void ticker_insert_event(const ticker_data_t *const data, ticker_event_t *obj, timestamp_t timestamp, uint32_t id) {
+#else
+void ticker_insert_event(const ticker_data_t *const data, ticker_event_t *obj, timestamp_t timestamp, uint64_t id) {
+#endif
     /* disable interrupts for the duration of the function */
     __disable_irq();
 

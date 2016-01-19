@@ -24,7 +24,11 @@ typedef uint32_t timestamp_t;
  */
 typedef struct ticker_event_s {
     timestamp_t            timestamp; /**< Event's timestamp */
+#ifndef EMUNO
     uint32_t               id;        /**< TimerEvent object */
+#else
+    uint64_t                id;
+#endif
     struct ticker_event_s *next;      /**< Next event in the queue */
 } ticker_event_t;
 
@@ -89,7 +93,11 @@ void ticker_remove_event(const ticker_data_t *const data, ticker_event_t *obj);
  * @param timestamp The event's timestamp
  * @param id        The event object
  */
+#ifndef EMUNO
 void ticker_insert_event(const ticker_data_t *const data, ticker_event_t *obj, timestamp_t timestamp, uint32_t id);
+#else
+void ticker_insert_event(const ticker_data_t *const data, ticker_event_t *obj, timestamp_t timestamp, uint64_t id);
+#endif
 
 /** Read the current ticker's timestamp
  *
