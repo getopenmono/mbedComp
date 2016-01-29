@@ -18,10 +18,10 @@ bool Serial::isEnumerated = false;
 Serial::Serial(PinName tx, PinName rx)
 {
 //    uiConsole.WriteLine("Serial contrsuctor, start USB...");
-    
+
     uartStarted = false;
     timeoutMs = 500;
-    
+
 //    uiConsole.WriteLine("USB started");
 }
 
@@ -30,12 +30,12 @@ int Serial::printf(const char* format, ...) {
 #ifndef MONO_NO_USB
     if (!Serial::isEnumerated)
         enumerateIfConfigurationChanged();
-    
+
     std::va_list arg;
 	va_start(arg, format);
     vsprintf(strBuffer, format, arg);
     va_end(arg);
-    
+
     if (Serial::isEnumerated)
     {
         int to = 0;
@@ -43,18 +43,18 @@ int Serial::printf(const char* format, ...) {
         {
             CyDelay(1);
         }
-        
+
         if (to < timeoutMs)
             USBUART_PutString(strBuffer);
         else {
 //            AppController::uicon.WriteLine("UART timeout!");
 //            AppController::uicon.Write(strBuffer);
         }
-        
+
     }
-    
+
 #endif
-    
+
     return 0;
 }
 
@@ -79,8 +79,8 @@ void Serial::enumerateIfConfigurationChanged()
 #endif
         uartStarted = true;
     }
-    
-    
+
+
 //    uiConsole.WriteLine("enum if config changed...");
     if (Serial::isEnumerated)
     {
@@ -110,23 +110,23 @@ void Serial::enumerateIfConfigurationChanged()
 bool Serial::enumerate()
 {
 //    uiConsole.WriteLine("USB enumerate: Get conf...");
-    int timeOut = timeoutMs;
     CyGlobalIntEnable;
-    
+
 #ifndef MONO_NO_USB
+    int timeOut = timeoutMs;
     while(USBUART_GetConfiguration() == 0 && timeOut > 0)
     {
         CyDelay(1); // wait one MS
         timeOut--;
     }
-    
+
 //    if (0 != USBFS_GetConfiguration())
 //    {
 //        USBUART_IsConfigurationChanged();  /* Clear configuration changes state status */
 //        isEnumerated = false;
 //        return false;
 //    }
-    
+
     if (USBUART_GetConfiguration())
     {
 //        uiConsole.WriteLine("Got config!");
@@ -158,7 +158,7 @@ bool Serial::DTR()
     {
         enumerateIfConfigurationChanged();
     }
-    
+
     return USBUART_GetLineControl() & USBUART_LINE_CONTROL_DTR;
 #else
     return false;
