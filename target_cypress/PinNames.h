@@ -40,8 +40,8 @@ typedef enum {
     RP_SPI_CLK = RP_SPI_HARD_WIRE,              
     RP_SPI_MOSI = RP_SPI_HARD_WIRE,
     RP_SPI_MISO = RP_SPI_HARD_WIRE,
-    RP_SPI_CS = CYREG_PRT2_PC2,                 /**< Chip select for wireless module SPI, active low */
-    RP_nRESET = CYREG_PRT5_PC0,                 /**< Reset line for wireless module, (open-drain) active low */
+    RP_SPI_CS = CYREG_PRT12_PC4,                 /**< Chip select for wireless module SPI, active low */
+    RP_nRESET = HARD_WIRED,                 /**< Reset line for wireless module, (open-drain) active low */
     RP_INTERRUPT = CYREG_PRT2_PC4,              /**< Wireless module interrupt on data, input! */
     
     //SD Card SPI pins
@@ -60,7 +60,7 @@ typedef enum {
     
     //Display pins
     TFT_LED_PWR = CYREG_PRT5_PC1,
-    TFT_REGISTER_SELECT = CYREG_PRT6_PC7,
+    TFT_REGISTER_SELECT = CYREG_PRT2_PC3,
     TFT_RESET = CYREG_PRT2_PC0,
     TFT_TEARING_EFFECT = CYREG_IO_PC_PRT15_PC5,
     TFT_IM0 = HARD_WIRED,
@@ -74,8 +74,8 @@ typedef enum {
     ARD_D10_JC_RING1 = CYREG_PRT0_PC2,
     ARD_D11_JC_RING2 = CYREG_PRT0_PC1,
     JC_JPI_EN        = CYREG_PRT12_PC2,
-    JC_JPO_EN        = CYREG_PRT12_PC4,
-    JC_SL_CTRL       = CYREG_PRT0_PC0,
+    JC_JPO_EN        = CYREG_PRT12_PC1,
+    JC_SL_CTRL       = CYREG_PRT0_PC0,      /**< Simulated load control enable */
     
     // Arduino Digital pins
     ARD_D0 = CYREG_PRT4_PC0,
