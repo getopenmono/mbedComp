@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <PinNames.h>
+#include <stdarg.h>
 
 namespace mbed {
     
@@ -28,7 +29,9 @@ namespace mbed {
         Serial(PinName tx, PinName rx);
         
         int printf(const char* format, ...);
-        
+
+        int vprintf(const char *format, va_list ap);
+
         bool DTR();
         
         bool IsReady();

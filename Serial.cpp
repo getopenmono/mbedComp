@@ -27,14 +27,24 @@ Serial::Serial(PinName tx, PinName rx)
 
 int Serial::printf(const char* format, ...) {
 //    uiConsole.WriteLine("usb printf...");
+
+
+    std::va_list arg;
+	va_start(arg, format);
+    int retval = this->vprintf(format, arg);
+    va_end(arg);
+
+    return retval;
+}
+
+
+int Serial::vprintf(const char *format, va_list ap)
+{
 #ifndef MONO_NO_USB
     if (!Serial::isEnumerated)
         enumerateIfConfigurationChanged();
 
-    std::va_list arg;
-	va_start(arg, format);
-    vsprintf(strBuffer, format, arg);
-    va_end(arg);
+    int retval = vsprintf(strBuffer, format, ap);
 
     if (Serial::isEnumerated)
     {
@@ -47,15 +57,13 @@ int Serial::printf(const char* format, ...) {
         if (to < timeoutMs)
             USBUART_PutString(strBuffer);
         else {
-//            AppController::uicon.WriteLine("UART timeout!");
-//            AppController::uicon.Write(strBuffer);
+            //AppController::uicon.WriteLine("UART timeout!");
+            //AppController::uicon.Write(strBuffer);
         }
-
     }
-
 #endif
 
-    return 0;
+    return retval;
 }
 
 // int Serial::scanf(const char* format, ...) {
