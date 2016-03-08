@@ -61,6 +61,8 @@ int Serial::vprintf(const char *format, va_list ap)
             //AppController::uicon.Write(strBuffer);
         }
     }
+#else
+    int retval = 0;
 #endif
 
     return retval;
