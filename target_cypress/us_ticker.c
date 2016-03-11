@@ -89,10 +89,11 @@ void us_ticker_set_interrupt(timestamp_t timestamp) {
     uint64_t now = (us_ticker_systick_timer_offset + (CySysTickGetReload() - CySysTickGetValue()));
     uint64_t utime = timestamp*(uint64)BCLK__BUS_CLK__MHZ;
     
-    if (now > utime)
+    if (now >= utime)
     {
-        //PWM_WriteCompare2(32);
-        utime = now;
+        // Systick cannot be negative or zero
+        // if systick is zero it will be disabled
+        now = utime - 1;
     }
     
     uint64_t diff = utime - now;
