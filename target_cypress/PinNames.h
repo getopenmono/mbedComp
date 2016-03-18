@@ -102,6 +102,8 @@ typedef enum {
     
     USBTX,
     USBRX,
+    STDIO_UART_TX = USBTX,
+    STDIO_UART_RX = USBRX,
     
     NC = -1
 } PinName;

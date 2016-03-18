@@ -17,7 +17,7 @@
 #include "FileHandle.h"
 #include "FileSystemLike.h"
 #include "FilePath.h"
-//#include "serial_api.h"
+#include "serial_api.h"
 extern "C" {
 #include <project.h>
 }
@@ -199,6 +199,11 @@ extern "C" int PREFIX(_close)(FILEHANDLE fh) {
     return fhc->close();
 }
 
+#ifdef MONO_CONSOLE_STDOUT
+#include <display/ui/console_view.h>
+extern mono::ui::ConsoleView<176,110> *ui_console_stdout;
+#endif
+
 #if defined(__ICCARM__)
 extern "C" size_t    __write (int        fh, const unsigned char *buffer, size_t length) {
 #else
@@ -214,12 +219,15 @@ extern "C" int PREFIX(_write)(FILEHANDLE fh, const unsigned char *buffer, unsign
 #else
 #ifndef MONO_NO_USB
         int to = 0;
-        while (USBUART_CDCIsReady() == 0 && 1000 > to++)
+        while (USBUART_CDCIsReady() == 0 && 100 > to++)
         {
             CyDelay(1);
         }
-        if (to < 1000)
+        if (to < 100)
             USBUART_PutData(buffer, length);
+#elif MONO_CONSOLE_STDOUT
+        if (ui_console_stdout != 0)
+            ui_console_stdout->Write((char*)buffer);
 #endif
 #endif
         n = length;
