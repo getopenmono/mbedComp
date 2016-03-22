@@ -18,7 +18,7 @@ int us_ticker_inited = 0;
 /** 
  * Global variable used by the ticker api, to hold current timer value
  * (timer count register substitute)
- * It needs to count to 2^32 us, which is 2^32 * Mhz clock, therefore we use a
+ * It needs to count to 2^32 us, which is 2^32 * 66 Mhz clock, therefore we use a
  * 64 bit integer, which is more than enough.
  */
 uint64_t us_ticker_systick_timer_offset = 0;
@@ -86,17 +86,18 @@ uint32_t us_ticker_read() {
 
 void us_ticker_set_interrupt(timestamp_t timestamp) {
     CySysTickDisableInterrupt();
-    uint64_t now = (us_ticker_systick_timer_offset + (CySysTickGetReload() - CySysTickGetValue()));
-    uint64_t utime = timestamp*(uint64)BCLK__BUS_CLK__MHZ;
-    
+    uint32_t now = us_ticker_read();
+    uint32_t utime = timestamp;
+
     if (now >= utime)
     {
         // Systick cannot be negative or zero
         // if systick is zero it will be disabled
-        now = utime - 1;
+        now = utime - 10;
     }
-    
-    uint64_t diff = utime - now;
+
+    // diff is in clock cycles
+    uint64_t diff = (utime - now)*(uint64_t)BCLK__BUS_CLK__MHZ;
     
     us_ticker_systick_timer_offset += CySysTickGetReload() - CySysTickGetValue();
     
