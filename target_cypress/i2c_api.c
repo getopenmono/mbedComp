@@ -57,8 +57,6 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
     
     int status = I2C_MasterReadBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
 
-    debug("i2c mstrRdBuf stat: 0x%X, stop?: %i\n\r",status, stop);
-
     if (status != I2C_MSTR_NO_ERROR)
     {
         debug("mbed I2C read failed with error: %i\n\r", status);
