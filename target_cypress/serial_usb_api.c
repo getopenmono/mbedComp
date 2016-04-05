@@ -72,6 +72,17 @@ char serial_usbuart_init_cdc(serial_t *obj)
     
 }
 
+char serial_usbuart_is_started()
+{
+    return serial_ports[0].usbStarted;
+}
+
+void serial_usbuart_stopped()
+{
+    serial_ports[0].usbStarted = 0;
+    serial_ports[0].cdcInited = 0;
+}
+
 char serial_usbuart_dtr(serial_t *obj)
 {
     if (!serial_usbuart_init_cdc(obj))

@@ -56,15 +56,34 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
     }
     
     int status = I2C_MasterReadBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
-    
+
+    debug("i2c mstrRdBuf stat: 0x%X, stop?: %i\n\r",status, stop);
+
     if (status != I2C_MSTR_NO_ERROR)
     {
         debug("mbed I2C read failed with error: %i\n\r", status);
-        return status;
+        return 0;
     }
-    
-    
-    while((I2C_MasterStatus() & I2C_MSTAT_RD_CMPLT) == 0);
+
+    int timeout = 100, to = 0;
+
+    while((I2C_MasterStatus() & (I2C_MSTAT_RD_CMPLT | I2C_MSTAT_ERR_XFER)) == 0 && to++ < timeout)
+    {
+        CyDelayUs(10);
+    }
+
+    if (I2C_MasterStatus() & I2C_MSTAT_ERR_XFER)
+    {
+        debug("i2c read failed with status: 0x%X\n\r!",I2C_MasterStatus());
+        return 0;
+    }
+
+    if (to == timeout)
+    {
+        debug("I2C read timeout!\n\r");
+        return 0;
+    }
+
     
     return length;
 }
@@ -93,8 +112,24 @@ int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
         debug("mbed I2C write failed with err: %i\n\r",status);
         return 0;
     }
-    
-    while ((I2C_MasterStatus() & I2C_MSTAT_WR_CMPLT) == 0);
+
+    int timeout = 100, to = 0;
+    while ((I2C_MasterStatus() & (I2C_MSTAT_WR_CMPLT | I2C_MSTAT_ERR_XFER)) == 0 && to++ < timeout)
+    {
+        CyDelayUs(10);
+    }
+
+    if (I2C_MasterStatus() & I2C_MSTAT_ERR_XFER)
+    {
+        debug("i2c write failed with status: 0x%X\n\r",I2C_MasterStatus());
+        return 0;
+    }
+
+    if (to == timeout)
+    {
+        debug("I2C write timeout!\n\r");
+        return 0;
+    }
     
     return length;
 }

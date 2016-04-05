@@ -33,7 +33,7 @@ typedef enum {
     SW_USER = CYREG_PRT5_PC4,                   /**< User button pin, active low */
     BUZZER = CYREG_PRT5_PC3,                    /**< Buzzer PWM signal pin */
     EXPANSION_PWR_ENABLE = CYREG_PRT5_PC6,      /**< Enable the power for expansion connector (5V default)  */
-    EXPANSION_3V3_ENABLE = CYREG_PRT5_PC5,       /**< Enable 3.3V on HIGH , LOW is 5V. */
+    EXPANSION_3V3_ENABLE = CYREG_PRT5_PC5,      /**< Enable 3.3V on HIGH , LOW is 5V. */
     
     //Redpine wireless pins
     RP_SPI_HARD_WIRE,                           /**< Enum for the wireless module SPI */

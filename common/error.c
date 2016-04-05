@@ -34,7 +34,8 @@ WEAK void error(const char* format, ...) {
 #endif
     
 #ifndef EMUNO
-    
+
+    PWM_Start();
     PWM_WriteCompare2(64);
     CyDelay(200);
     PWM_WriteCompare2(0);
