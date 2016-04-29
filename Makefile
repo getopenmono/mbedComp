@@ -5,7 +5,7 @@ FLASH_ROW_SIZE=256
 FLASH_ARRAY_SIZE=65536
 EE_ARRAY=64
 EE_ROW_SIZE=16
-OPTIMIZATION = -O0
+OPTIMIZATION = -Os
 INCLUDE_DIR=../mono_buildsystem/include
 CYPRESS_DIR=../mono_buildsystem/Generated_Source/PSoC5
 LINKER_SCRIPT=${INCLUDE_DIR}/cm3gcc.ld
@@ -27,8 +27,7 @@ MBED_OBJECTS =	$(patsubst %.cpp,%.o,$(wildcard $(MBED_PATH)/*.cpp)) \
 				$(patsubst %.cpp,%.o,$(wildcard $(MBED_FS)/fat/*.cpp)) \
 				$(patsubst %.cpp,%.o,$(wildcard $(MBED_FS)/fat/ChaN/*.cpp))
 				
-MBED_INCLUDES =	$(MBED_PATH) \
-				$(MBED_PATH)/api \
+MBED_INCLUDES =	$(MBED_PATH)/api \
 				$(MBED_PATH)/hal \
 				$(MBED_PATH)/target_cypress \
 				$(MBED_FS)/sd \
@@ -119,10 +118,10 @@ $(BUILD_DIR)/%.o: %.cpp
 
 mbedlib.a: $(MBED_TARGET_OBJECTS)
 	@echo "Linking mbed framework ..."
-	$(AR) rcs $@ $^
+	@$(AR) rcs $@ $^
 	@echo "Copying header files to include dir..."
-	#@$(MKDIR) -p include
-	#@$(COPY) $(MBED_INCLUDE_FILES) include/.
+	@$(MKDIR) -p include
+	@$(COPY) $(MBED_INCLUDE_FILES) include/.
 
 mbedFiles:
 	@echo $(MBED_TARGET_OBJECTS)
