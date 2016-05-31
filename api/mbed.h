@@ -4,6 +4,8 @@
 #include "PinNames.h"
 #include "I2C.h"
 #include "DigitalOut.h"
+#include "DigitalIn.h"
+#include "DigitalInOut.h"
 #include "InterruptIn.h"
 #include "mbed_error.h"
 #include "mbed_debug.h"
