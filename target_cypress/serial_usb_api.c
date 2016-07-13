@@ -11,7 +11,10 @@ extern "C" {
 }
 #endif
 
-static char serial_usbuart_is_powered = 1;
+
+extern struct serial_port_s serial_ports[2];
+
+char serial_usbuart_is_powered = 0;
 static uint32_t serial_usbuart_first_enumeration_timeout_ms = 300;
 static uint32_t serial_usbuart_enumeration_delay_ms = 200;
 
@@ -38,16 +41,18 @@ char serial_usbuart_init_cdc(serial_t *obj)
         return 1;
 
     if (!serial_usbuart_is_powered)
+    {
         return 0;
+    }
 
     //usb has power, start it if needed
     if (!obj->port->usbStarted)
     {
         CyGlobalIntEnable;
-        obj->port->USB_Start(0, USBUART_DWR_VDDD_OPERATION);
+        obj->port->USB_Start(0, USBUART_5V_OPERATION);
         obj->port->usbStarted = 1;
     }
-    
+
     // not enumerated (first time)
     if (obj->port->lastEnumTry == 0)
     {
@@ -69,7 +74,7 @@ char serial_usbuart_init_cdc(serial_t *obj)
         else
             return 0;
     }
-    
+
 }
 
 char serial_usbuart_is_started()
@@ -90,4 +95,3 @@ char serial_usbuart_dtr(serial_t *obj)
 
     return obj->port->USB_CDC_GetLineControl() & USBUART_LINE_CONTROL_DTR;
 }
-

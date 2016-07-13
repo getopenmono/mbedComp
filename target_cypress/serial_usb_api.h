@@ -12,12 +12,6 @@ extern "C" {
 #include <us_ticker_api.h>
 #include <objects.h>
 
-static char serial_usbuart_is_powered;
-static uint32_t serial_usbuart_first_enumeration_timeout_ms;
-static uint32_t serial_usbuart_enumeration_delay_ms;
-
-static struct serial_port_s serial_ports[2];
-
 /**
  * try to enumerate (configure the USB endpoint on host)
  * this is an internal function
