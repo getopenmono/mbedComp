@@ -6,15 +6,15 @@ FLASH_ARRAY_SIZE=65536
 EE_ARRAY=64
 EE_ROW_SIZE=16
 OPTIMIZATION = -Os
-INCLUDE_DIR=../mono_buildsystem/include
-CYPRESS_DIR=../mono_buildsystem/Generated_Source/PSoC5
 LINKER_SCRIPT=${INCLUDE_DIR}/cm3gcc.ld
 BUILD_DIR=build
+PSOC5_PATH=../mono_psoc5_library
 MONO_FRAMEWORK_PATH =../mono_framework
 MBED_PATH=.
 MBED_FS=../mbed/libraries/fs
-COMP_LIB=../mono_buildsystem/lib/CyComponentLibrary.a
-MONO_LIB=../mono_buildsystem/lib/monoCyLib.a
+INCLUDE_DIR=$(PSOC5_PATH)/include
+COMP_LIB=$(PSOC5_PATH)/lib/CyComponentLibrary.a
+MONO_LIB=$(PSOC5_PATH)/lib/monoCyLib.a
 
 MBED_OBJECTS =	$(patsubst %.cpp,%.o,$(wildcard $(MBED_PATH)/*.cpp)) \
 				$(patsubst %.c,%.o,$(wildcard $(MBED_PATH)/common/*.c)) \
