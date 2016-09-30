@@ -91,6 +91,7 @@ extern "C" {
         uint8_t irqLine;    /**< The interrypt line as defined by gpio_irq_piculines */
         int snapShotAddr;   /**< The address to the PICU snapshot register */
         uint8_t ch;         /**< The index for the channel, that hold a pointer to the InterruptIn object */
+        uint8_t intTypeValue;/**< The value of the PICU*_INTTYPE register */
     };
 
 #ifdef __cplusplus

@@ -197,16 +197,17 @@ void gpio_irq_set(gpio_irq_t *obj, gpio_irq_event event, uint32_t enable) {
         CY_SET_REG8(obj->inttypeReg, 0x02);
     else
         debug("Did not set any interrupt handler type!\n\r");
-    
+
+    obj->intTypeValue = CY_GET_REG8(obj->inttypeReg);
     CyIntSetVector(obj->irqLine, handle_interrupt_in);
     CyIntEnable(obj->irqLine);
 }
 
 void gpio_irq_enable(gpio_irq_t *obj) {
-    CyIntEnable(obj->irqLine);
+    CY_SET_REG8(obj->inttypeReg, obj->intTypeValue);
 }
 
 void gpio_irq_disable(gpio_irq_t *obj) {
-    CyIntDisable(obj->irqLine);
+     CY_SET_REG8(obj->inttypeReg, 0x0);
 }
 
