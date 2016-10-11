@@ -1,0 +1,23 @@
+{ "build_systems":
+  [ { "file_regex": "^([^\n:]+):([0-9]+):([0-9]+): (.*)$"
+    , "name": "mbedComp"
+    , "cmd": "make"
+    , "variants":
+      [ { "name": "Clean"
+        , "cmd": ["make","clean"]
+        }
+      ]
+    , "working_dir": "${project_path}"
+    }
+  ]
+, "folders":
+  [ { "path": "."
+    , "folder_exclude_patterns": ["build"]
+    , "file_exclude_patterns": []
+    }
+  , { "path": "../mbed"
+    , "folder_exclude_patterns": []
+    , "file_exclude_patterns": []
+    }
+  ]
+}

@@ -19,7 +19,7 @@ void i2c_init(i2c_t *obj, PinName sda, PinName scl)
  */
 void i2c_frequency(i2c_t *obj, int hz)
 {
-    
+
 }
 
 /** Send START command.
@@ -54,12 +54,12 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
         I2C_Start();
         obj->initied = 1;
     }
-    
+
     int status = I2C_MasterReadBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
 
     if (status != I2C_MSTR_NO_ERROR)
     {
-        debug("mbed I2C read failed with error: %i\n\r", status);
+        debug("mbed I2C read failed with error: %i\r\n", status);
         return 0;
     }
 
@@ -72,17 +72,17 @@ int  i2c_read(i2c_t *obj, int address, char *data, int length, int stop)
 
     if (I2C_MasterStatus() & I2C_MSTAT_ERR_XFER)
     {
-        debug("i2c read failed with status: 0x%X\n\r!",I2C_MasterStatus());
+        debug("i2c read failed with status: 0x%X\r\n!",I2C_MasterStatus());
         return 0;
     }
 
     if (to == timeout)
     {
-        debug("I2C read timeout!\n\r");
+        debug("I2C read timeout!\r\n");
         return 0;
     }
 
-    
+
     return length;
 }
 
@@ -102,12 +102,12 @@ int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
         I2C_Start();
         obj->initied = 1;
     }
-    
+
     int status = I2C_MasterWriteBuf(address, (uint8_t*)data, length, stop ? I2C_MODE_COMPLETE_XFER : I2C_MODE_NO_STOP);
-    
+
     if (status != I2C_MSTR_NO_ERROR)
     {
-        debug("mbed I2C write failed with err: %i\n\r",status);
+        debug("mbed I2C write failed with err: %i\r\n",status);
         return 0;
     }
 
@@ -119,16 +119,16 @@ int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
 
     if (I2C_MasterStatus() & I2C_MSTAT_ERR_XFER)
     {
-        debug("i2c write failed with status: 0x%X\n\r",I2C_MasterStatus());
+        debug("i2c write failed with status: 0x%X\r\n",I2C_MasterStatus());
         return 0;
     }
 
     if (to == timeout)
     {
-        debug("I2C write timeout!\n\r");
+        debug("I2C write timeout!\r\n");
         return 0;
     }
-    
+
     return length;
 }
 
@@ -137,7 +137,7 @@ int  i2c_write(i2c_t *obj, int address, const char *data, int length, int stop)
  */
 void i2c_reset(i2c_t *obj)
 {
-    
+
 }
 
 /** Read one byte.

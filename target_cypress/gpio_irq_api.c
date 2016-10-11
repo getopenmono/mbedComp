@@ -19,7 +19,6 @@
 #include <mbed_debug.h>
 #include <mbed_error.h>
 #include <stdio.h>
-//#include "cmsis.h"
 
 #define CHANNEL_COUNT (9*8) // 9 ports with 8 pins each
 #define PICU_COUNT 9
@@ -29,30 +28,28 @@ static gpio_irq_handler irq_handler;
 
 
 static void handle_interrupt_in(void) {
-    
+
     uint8_t picus[PICU_COUNT] =
     {
         CY_GET_REG8(CYREG_PICU0_INTSTAT),
         CY_GET_REG8(CYREG_PICU1_INTSTAT),
         CY_GET_REG8(CYREG_PICU2_INTSTAT),
         CY_GET_REG8(CYREG_PICU3_INTSTAT),
-        
         CY_GET_REG8(CYREG_PICU4_INTSTAT),
         CY_GET_REG8(CYREG_PICU5_INTSTAT),
         CY_GET_REG8(CYREG_PICU6_INTSTAT),
         CY_GET_REG8(CYREG_PICU12_INTSTAT),
-        
         CY_GET_REG8(CYREG_PICU15_INTSTAT)
     };
-    
+
     uint8_t bitloc;
-    
+
     for (uint8_t p=0; p<PICU_COUNT;p++)
     {
         while (picus[p] > 0) {
             // get the position of the MSB in INTSTAT register
             bitloc = 31 - __CLZ(picus[p]);
-            
+
             //test to see if there is an installed interrupt
             if (channel_ids[p*8+bitloc] != 0)
             {
@@ -63,13 +60,13 @@ static void handle_interrupt_in(void) {
                     type = CY_GET_REG8( CYDEV_PICU_INTTYPE_BASE + (12*8+bitloc) );
                 else if (p == 8)
                     type = CY_GET_REG8( CYDEV_PICU_INTTYPE_BASE + (15*8+bitloc) );
-                
+
                 if (type == 1)
                     irq_handler(channel_ids[p*8+bitloc], IRQ_RISE);
                 else if (type > 1) //also catches BOTH (change trigger)
                     irq_handler(channel_ids[p*8+bitloc], IRQ_FALL);
             }
-            
+
             picus[p] -= 1<<bitloc;
         }
     }
@@ -79,10 +76,10 @@ static void handle_interrupt_in(void) {
 int  gpio_irq_init(gpio_irq_t *obj, PinName pin, gpio_irq_handler handler, uint32_t id)
 {
     if (pin == NC) return -1;
-    
+
     irq_handler = handler;
     obj->pinReg = pin;
-    
+
     //find PORT for pin
     if      (CYDEV_IO_PC_PRT0_BASE == (pin & ~0x07))
     {
@@ -158,16 +155,16 @@ int  gpio_irq_init(gpio_irq_t *obj, PinName pin, gpio_irq_handler handler, uint3
     }
     else
     {
-        error("Interrupt PORT input not recognized for pin !\n\r");
+        error("Interrupt PORT input not recognized for pin !\r\n");
     }
-    
+
     // route the interrupt line to the fixed function component (which is PICU)
     uint32_t idmuxAddr = CYDEV_IDMUX_BASE + (obj->irqLine)/4; // 4 IDMUXes per register
     uint8_t idmuxVal = ~( 0x03 << ((obj->irqLine % 4)*2) );
     CY_SET_REG8(idmuxAddr, CY_GET_REG8(idmuxAddr) & idmuxVal);
-    
+
     int index;
-    
+
     // calc the interrupt table index
     if      (obj->portNum == 15)
         index = 8*8 + (pin & 0x07);
@@ -175,11 +172,11 @@ int  gpio_irq_init(gpio_irq_t *obj, PinName pin, gpio_irq_handler handler, uint3
         index = 7*8 + (pin & 0x07);
     else
         index = obj->portNum*8 + (pin & 0x07);
-    
+
     // put us in the interrupt table
     channel_ids[index] = id;
     obj->ch = index;
-    
+
     return 0;
 }
 
@@ -188,15 +185,17 @@ void gpio_irq_free(gpio_irq_t *obj) {
 }
 
 void gpio_irq_set(gpio_irq_t *obj, gpio_irq_event event, uint32_t enable) {
-    
+
     if (!enable)
         CY_SET_REG8(obj->inttypeReg, 0x0);
     else if (event == IRQ_RISE)
         CY_SET_REG8(obj->inttypeReg, 0x01);
     else if (event == IRQ_FALL)
         CY_SET_REG8(obj->inttypeReg, 0x02);
+    else if (event == (IRQ_FALL | IRQ_RISE))
+        CY_SET_REG8(obj->inttypeReg, 0x03);
     else
-        debug("Did not set any interrupt handler type!\n\r");
+        debug("Did not set any interrupt handler type!\r\n");
 
     obj->intTypeValue = CY_GET_REG8(obj->inttypeReg);
     CyIntSetVector(obj->irqLine, handle_interrupt_in);
@@ -210,4 +209,3 @@ void gpio_irq_enable(gpio_irq_t *obj) {
 void gpio_irq_disable(gpio_irq_t *obj) {
      CY_SET_REG8(obj->inttypeReg, 0x0);
 }
-
